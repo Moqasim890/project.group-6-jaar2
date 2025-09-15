@@ -1,11 +1,12 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Symfony\Component\Routing\Annotation\Route as AnnotationRoute;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/tickets', function ()  {
+Route::get('/tickets', function () {
     return view('tickets.index');
-});
+})->name('tickets.index');
