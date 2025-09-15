@@ -6,7 +6,7 @@
   <title>{{ config('app.name','Sneakerness') }} — Home</title>
   <meta name="description" content="Sneakerness® Rotterdam — koop tickets per tijdslot of huur een stand.">
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  @vite(['resources/css/app.css', 'resources/js/app.js'])
 <style>
       body {
      background-image: url('{{ asset('img/Sneaker.webp') }}') !important;
