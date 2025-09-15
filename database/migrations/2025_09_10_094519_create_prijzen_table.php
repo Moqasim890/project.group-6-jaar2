@@ -18,7 +18,6 @@ return new class extends Migration {
             $table->timestamp('DatumGewijzigd')->useCurrent()->useCurrentOnUpdate();
 
             $table->unique(['EvenementId','Datum','Tijdslot']);
-            $table->check('Tarief >= 0');
         });
     }
     public function down(): void {

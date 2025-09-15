@@ -19,7 +19,6 @@ return new class extends Migration {
             $table->timestamp('DatumGewijzigd')->useCurrent()->useCurrentOnUpdate();
 
             $table->index(['EvenementId','VerkoperId']);
-            $table->check('Prijs >= 0');
         });
     }
     public function down(): void {
