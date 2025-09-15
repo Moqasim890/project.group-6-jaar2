@@ -10,3 +10,7 @@ Route::get('/', function () {
 Route::get('/tickets', function () {
     return view('tickets.index');
 })->name('tickets.index');
+
+Route::get('/tickets/kopen', function () {
+    return view('tickets.kopen');
+})->name('tickets.kopen');
