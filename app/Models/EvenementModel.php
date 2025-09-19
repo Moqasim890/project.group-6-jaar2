@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class EvenementModel extends Model
 {
     //
-    protected $table = 'Evenement';
+    protected $table = 'evenements';
     protected $primaryKey = 'id';
     public $timestamps = true;
 }

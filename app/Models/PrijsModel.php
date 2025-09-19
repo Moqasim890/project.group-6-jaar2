@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class PrijsModel extends Model
 {
     //
-    protected $table = 'Prijs';
+    protected $table = 'prijzen';
     protected $primaryKey = 'id';
     public $timestamps = true;
 

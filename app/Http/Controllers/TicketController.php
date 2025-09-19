@@ -6,6 +6,7 @@ use App\Models\TicketModel;
 use App\Models\EvenementModel;
 use App\Models\PrijsModel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class TicketController extends Controller
 {
@@ -17,8 +18,9 @@ class TicketController extends Controller
         //
         // $tickets = TicketModel::all();
         $evenementen = EvenementModel::all();
+        $prijzen = PrijsModel::all();
 
-        return view('tickets.index', compact( 'evenementen'));
+        return view('tickets.index', compact( 'evenementen', 'prijzen'));
     }
 
     /**
@@ -43,8 +45,10 @@ class TicketController extends Controller
     public function show(EvenementModel $evenement)
     {
         //
-        $Prijs = EvenementModel::all();
+        $prijzen = PrijsModel::where('EvenementId', $evenement->id)->get()->groupBy('Datum');
+        echo $prijzen;
 
+        return view('tickets.show', compact('evenement', 'prijzen'));
     }
 
     /**

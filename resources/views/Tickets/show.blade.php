@@ -5,22 +5,22 @@
     </div>
     <div>
         <h1>Buy Tickets</h1>
-        @foreach($event->days as $day)
-            <div class="accordion mb-3" id="accordionDay{{ $day->id }}">
+        @foreach($prijzen as $datum => $prijsGroep)
+            <div class="accordion mb-3" id="accordionDay{{ $datum }}">
                 <div class="accordion-item">
-                    <h2 class="accordion-header" id="heading{{ $day->id }}">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ $day->id }}" aria-expanded="false" aria-controls="collapse{{ $day->id }}">
-                            {{ $day->date->format('l, F j, Y') }}
+                    <h2 class="accordion-header" id="heading{{ $datum }}">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ $datum }}" aria-expanded="false" aria-controls="collapse{{ $datum }}">
+                            {{ \Carbon\Carbon::parse($datum)->format('l, F j, Y') }}
                         </button>
                     </h2>
-                    <div id="collapse{{ $day->id }}" class="accordion-collapse collapse" aria-labelledby="heading{{ $day->id }}" data-bs-parent="#accordionDay{{ $day->id }}">
+                    <div id="collapse{{ $datum }}" class="accordion-collapse collapse" aria-labelledby="heading{{ $datum }}" data-bs-parent="#accordionDay{{ $datum }}">
                         <div class="accordion-body">
                             <p>Tickets available for this day:</p>
-                            <form method="POST" action="{{ route('tickets.purchase', ['day' => $day->id]) }}">
+                            <form method="POST" action="{{ route('tickets.index', ['day' => $datum]) }}">
                                 @csrf
                                 <div class="mb-3">
-                                    <label for="quantity{{ $day->id }}" class="form-label">Quantity</label>
-                                    <input type="number" name="quantity" id="quantity{{ $day->id }}" class="form-control" min="1" value="1" required>
+                                    <label for="quantity{{ $datum }}" class="form-label">Quantity</label>
+                                    <input type="number" name="quantity" id="quantity{{ $datum }}" class="form-control" min="1" value="1" required>
                                 </div>
                                 <button type="submit" class="btn btn-primary">Buy Ticket</button>
                             </form>
