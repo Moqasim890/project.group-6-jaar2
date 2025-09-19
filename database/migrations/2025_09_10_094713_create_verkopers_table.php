@@ -9,10 +9,10 @@ return new class extends Migration {
         Schema::create('verkopers', function (Blueprint $table) {
             $table->id();
             $table->string('Naam',200);
-            $table->enum('SpecialeStatus',              ['GEEN','PARTNER'])->default('GEEN');
-            $table->enum('VerkooptSoort',               ['SNEAKERS','ETEN_DRINKEN','KIDS_CORNER','CUSTOMIZERS','TATTOO','BARBERSHOP','DJ_SET','OVERIG']);
-            $table->enum('StandType',                   ['A','AA','AAplus'])->nullable();
-            $table->enum('Dagen',                       ['EEN','TWEE'])->nullable();
+            $table->enum('SpecialeStatus', ['GEEN','PARTNER'])->default('GEEN');
+            $table->enum('VerkooptSoort', ['SNEAKERS','ETEN_DRINKEN','KIDS_CORNER','CUSTOMIZERS','TATTOO','BARBERSHOP','DJ_SET','OVERIG']);
+            $table->enum('StandType', ['A','AA','AAplus'])->nullable();
+            $table->enum('Dagen', ['EEN','TWEE'])->nullable();
             $table->string('LogoUrl',500)->nullable();
             $table->boolean('IsActief')->default(true);
             $table->text('Opmerking')->nullable();
