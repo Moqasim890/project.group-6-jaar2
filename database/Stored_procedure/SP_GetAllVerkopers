@@ -1,3 +1,6 @@
+--Stored procedure haalt alle data op in de database
+--zo hoeft er geen query uitgevoerd te hoeven worden op de client side, alleen een call 
+
 --verwijderen procedure als deze bestaat
 DROP PROCEDURE IF EXISTS Sp_GetAllVerkopers;
 
