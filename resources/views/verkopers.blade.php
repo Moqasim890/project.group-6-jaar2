@@ -25,7 +25,7 @@
                                 <td>{{ $verkoper->LogoUrl }}</td>
                             </tr>
                         @empty
-                            <tr>Leeg</tr>
+                            <td style="color: red">Er zijn op dit moment nog geen verkopers</td>
                         @endforelse
                     </tbody>
                 </table>
