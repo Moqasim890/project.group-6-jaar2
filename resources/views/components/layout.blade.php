@@ -39,6 +39,7 @@
   </div>
 </nav>
 
+
   <main class="text-white text-center">
     {{ $slot }}
   </main>
