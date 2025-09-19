@@ -21,30 +21,35 @@ class VerkopersTableSeeder extends Seeder
                 'SpecialeStatus' => 'Partner',
                 'StandType' => 'AAPLUS', 
                 'Dagen' => 'TWEE',
+                'LogoUrl' => NULL
             ],
             [
                 'Naam' => 'test2',
                 'SpecialeStatus' => 'Partner',
                 'StandType' => 'A', 
                 'Dagen' => 'EEN',
+                'LogoUrl' => NULL
             ],
             [
                 'Naam' => 'test3',
                 'SpecialeStatus' => 'Partner',
                 'StandType' => 'AA', 
                 'Dagen' => 'TWEE',
+                'LogoUrl' => 'https://www.pixartprinting.it/blog/wp-content/uploads/2023/12/1978-1024x561.jpg'
             ],
             [
                 'Naam' => 'test4',
                 'SpecialeStatus' => 'GEEN',
                 'StandType' => 'AAPLUS', 
                 'Dagen' => 'TWEE',
+                'LogoUrl' => NULL
             ],
             [
                 'Naam' => 'test5',
                 'SpecialeStatus' => 'GEEN',
                 'StandType' => 'A', 
                 'Dagen' => 'EEN',
+                'LogoUrl' => NULL
             ]
         ]);
     }

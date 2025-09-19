@@ -22,7 +22,13 @@
                                 <td>{{ $verkoper->VerkooptSoort }}</td>
                                 <td>{{ $verkoper->StandType }}</td>
                                 <td>{{ $verkoper->Dagen }}</td>
-                                <td>{{ $verkoper->LogoUrl }}</td>
+                                <td>
+                                    @if($verkoper->LogoUrl)
+                                        <img height="50" src="{{ $verkoper->LogoUrl }}" alt="Logo">
+                                    @else
+                                        geen logo
+                                    @endif
+                                </td>
                             </tr>
                         @empty
                             <td style="color: red">Er zijn op dit moment nog geen verkopers</td>
