@@ -1,5 +1,6 @@
 
-    <x-layout></x-layout>
+    <x-layout>
+    @vite(['resources/css/verkopers-style.css'])
     <div class="container">
         <div class="row mt-5">
             <div class="col-12">
@@ -24,7 +25,7 @@
                                 <td>{{ $verkoper->Dagen }}</td>
                                 <td>
                                     @if($verkoper->LogoUrl)
-                                        <img height="50" src="{{ $verkoper->LogoUrl }}" alt="Logo">
+                                        <img class="logo-verkoper" src="{{ $verkoper->LogoUrl }}" alt="Logo">
                                     @else
                                         geen logo
                                     @endif
@@ -38,5 +39,4 @@
             </div>
         </div>
     </div>
-
-    
+</x-layout>

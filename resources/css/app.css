@@ -1,0 +1,128 @@
+/* 1) Tailwind v4 */
+@import "tailwindcss";
+
+/* 2) Tailwind scan-paths */
+@source "../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php";
+@source "../../storage/framework/views/*.php";
+@source "../**/*.blade.php";
+@source "../**/*.js";
+
+/* 3) Theme tokens */
+@theme {
+  --font-sans: "Instrument Sans", ui-sans-serif, system-ui, sans-serif,
+               "Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+}
+
+/* 4) Custom CSS */
+body{
+  background-image: url("../img/mo.png");
+  background-size: cover;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-position: center;
+  position: relative;
+  min-height: 100vh;
+}
+
+/* Dark overlay behind content */
+body::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:rgba(0,0,0,.55);
+  z-index:0;
+  pointer-events:none;
+}
+
+/* Belangrijk: alles boven de overlay tekenen */
+nav, footer, main { position: relative; z-index: 1; }
+
+/* ===== Navbar look ===== */
+.navbar { background: rgba(0,0,0,.85) !important; }
+.navbar .nav-link{ color:rgba(255,255,255,.75) !important; }
+.navbar .nav-link:hover,
+.navbar .nav-link:focus,
+.navbar .nav-link.active{ color:#fff !important; }
+
+/* ≥ lg: standaard flex layout */
+@media (min-width: 992px){
+  .navbar-expand-lg .navbar-collapse { display:flex !important; }
+}
+
+/* ≤ lg: collapse zichtbaar als paneel onder de balk */
+@media (max-width: 991.98px){
+  .navbar { overflow: visible !important; }
+  .navbar .container { position: relative; }
+
+  #mainNav.collapse{
+    position: absolute;
+    top: 100%;
+    left: 0; right: 0;
+    width: 100%;
+  }
+  #mainNav.collapse.show{
+    display: block;
+    background: rgba(0,0,0,.95);
+    z-index: 1050;
+    padding: .5rem 1rem;
+  }
+  #mainNav .navbar-nav{ flex-direction: column; }
+  #mainNav .nav-link{ padding:.5rem 0; }
+}
+
+.navbar.sticky-top{ z-index:1030; }
+
+/* ===== Buttons ===== */
+.btn-neon{
+  background:#f8d210; color:#000; font-weight:700;
+  border-radius:999px; padding-inline:1.25rem;
+  transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+}
+.btn-neon:hover{
+  background:#fff200; transform: translateY(-2px) scale(1.05);
+  box-shadow:0 8px 20px rgba(248,210,16,.45);
+}
+
+/* ===== Badges ===== */
+.badge-neon{
+  background:#f8d210 !important; color:#111 !important; font-weight:700; border-radius:.5rem;
+}
+
+/* ===== Cards ===== */
+.price-card{
+  border:1px solid rgba(255,255,255,.15);
+  background:rgba(255,255,255,.9);
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+  border-radius:1rem;
+}
+.price-card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 16px 40px rgba(0,0,0,.25);
+  border-color:#f8d210;
+}
+.price-badge{ border-radius:.6rem; font-weight:700; }
+
+/* ===== Glass Panels ===== */
+.glass{
+  background:rgba(255,255,255,.10);
+  border:1px solid rgba(255,255,255,.18);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius:1.25rem;
+  box-shadow:0 10px 30px rgba(0,0,0,.25);
+}
+
+/* ===== Utilities ===== */
+.muted{ color:#6c757d; }
+.divider{ height:1px; background:rgba(0,0,0,.08); }
+
+/* Dark-mode tweaks */
+@media (prefers-color-scheme: dark){
+  .price-card{ background:rgba(255,255,255,.08); }
+  .divider{ background:rgba(255,255,255,.12); }
+}
+
+/* ===== Footer ===== */
+footer{ background:#111; color:#aaa; }
+footer a{ color:#f8d210; text-decoration:none; }
+footer a:hover{ color:#fff200; }
