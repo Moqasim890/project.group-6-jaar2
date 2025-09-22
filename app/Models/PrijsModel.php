@@ -11,5 +11,8 @@ class PrijsModel extends Model
     protected $primaryKey = 'id';
     public $timestamps = true;
 
-
+    public function evenement()
+    {
+        return $this->belongsTo(EvenementModel::class, 'EvenementId');
+    }
 }
