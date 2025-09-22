@@ -12,7 +12,7 @@
             </tr>
             </thead>
             <tbody>
-            @foreach ($prijzen as $dag => $ticketgroup)
+            @forelse ($prijzen as $dag => $ticketgroup)
             <tr>
                 <td colspan="5" class="h4 font-weight-bold bg-light">
                 {{ \Carbon\Carbon::parse($dag)->translatedFormat('l d F Y') }}
@@ -23,7 +23,7 @@
                 <th>Prijs</th>
                 <th>Aantal</th>
             </tr>
-            @foreach ($ticketgroup as $ticket)
+            @forelse ($ticketgroup as $ticket)
                 <tr>
                 <td>{{ $ticket->Tijdslot }}</td>
                 <td>&euro; {{ number_format($ticket->Tarief, 2, ',', '.') }}</td>
@@ -32,8 +32,16 @@
                 class="form-control w-50 mx-auto text-center" style="font-size: 1.2rem; height: 60px;" />
                 </td>
                 </tr>
-            @endforeach
-            @endforeach
+            @empty
+                <tr>
+                    <td colspan="3" class="text-center text-muted">Geen tickets beschikbaar voor deze dag.</td>
+                </tr>
+            @endforelse
+            @empty
+                <tr>
+                    <td colspan="5" class="text-center text-muted">Geen ticketdagen gevonden.</td>
+                </tr>
+            @endforelse
 
             <tr>
             <td colspan="5" class="text-end font-weight-bold h5">
