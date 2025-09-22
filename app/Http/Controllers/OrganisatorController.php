@@ -7,25 +7,17 @@ use Illuminate\Http\Request;
 
 class OrganisatorController extends Controller
 {
-    //defiëneren Property
-    private $OrganisatorModel;
-
-    public function __construct()
-    {
-        //Object maken en toevoegen aan Property zodat model kan aangeroepen worden
-        $this->OrganisatorModel = new OrganisatorModel();
-    }
-
     public function GetAllVerkopers()
     {
-        //opslaan results in $verkopers
-        $verkopers = $this->OrganisatorModel->GetAllverkopers();
+        // alle organisatoren ophalen
+        $verkopers = OrganisatorModel::all();
 
-        //weergeven view en data meegeven
-        return view('/verkopers', [
+        // doorgeven aan view
+        return view('verkopers', [
             'verkopers' => $verkopers
         ]);
     }
+
 
     /**
      * Display a listing of the resource.
