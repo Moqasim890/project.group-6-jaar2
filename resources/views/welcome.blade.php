@@ -9,7 +9,9 @@
         <div class="col-lg-7">
           <div class="glass p-4 p-lg-5 h-100">
             <span class="badge badge-neon mb-2">Van Nellefabriek • Rotterdam • November</span>
-            <h1 class="display-6 fw-semibold mb-2 text-white">De grootste sneaker-community van Europa komt samen.</h1>
+            <h1 class="display-6 fw-semibold mb-2 text-white">
+              De grootste sneaker-community van Europa komt samen.
+            </h1>
             <p class="lead text-light mb-4">
               Art • Sport • Fashion • Muziek • <strong>Sneakers</strong>. Koop tickets per tijdslot — hoe eerder je binnen
               bent, hoe groter de kans op je grails.
@@ -24,44 +26,10 @@
             </div>
           </div>
         </div>
-        <div class="col-lg-5">
-          <div class="hero p-4 p-lg-5 h-100 bg-white rounded-4 shadow">
-            <h5 class="fw-semibold mb-3">Event details</h5>
-            <div class="d-grid gap-3">
-              <div>
-                <div class="small text-uppercase muted">Locatie</div>
-                <div>Van Nellefabriek, Rotterdam</div>
-              </div>
-              <div class="border-top"></div>
-              <div>
-                <div class="small text-uppercase muted">Datum</div>
-                <div>
-                  @if(isset($event) && $event)
-                    {{ \Illuminate\Support\Carbon::parse($event->Datum)->translatedFormat('j F Y') }} <span class="muted">(weekend)</span>
-                  @else
-                    November (exacte data t.b.c.)
-                  @endif
-                </div>
-              </div>
-              <div class="border-top"></div>
-              <div>
-                <div class="small text-uppercase muted">Capaciteit per tijdslot</div>
-                <div>
-                  @if(isset($event) && $event) {{ $event->AantalTicketsPerTijdslot }} tickets
-                  @else 500 tickets
-                  @endif
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
 
         {{-- Hero Sidebar --}}
         <div class="col-lg-5">
-          <div class="p-4 p-lg-5 h-100 glass text-white">
+          <div class="p-4 p-lg-5 h-100 glass text-white rounded-4 shadow">
             <h5 class="fw-semibold mb-3">Event details</h5>
             <div class="d-grid gap-3">
 
@@ -119,9 +87,7 @@
       </div>
 
       @php
-        // Groepeer prijzen per dag
         $grouped = collect($prices ?? [])->groupBy(fn($p) => \Illuminate\Support\Carbon::parse($p->Datum)->format('Y-m-d'));
-        // Locale-bewuste valutaformatter (EUR)
         $currencyFmt = class_exists('\NumberFormatter')
           ? new \NumberFormatter('nl_NL', \NumberFormatter::CURRENCY)
           : null;
@@ -130,10 +96,7 @@
       @if(isset($prices) && count($prices))
         @foreach($grouped as $date => $items)
           @php
-            // Bepaal het vroegste tijdslot van deze dag (voor “Vroege entree”)
-            $earliestTime = $items->min(function($p) {
-              return \Illuminate\Support\Carbon::parse($p->Tijdslot)->format('H:i');
-            });
+            $earliestTime = $items->min(fn($p) => \Illuminate\Support\Carbon::parse($p->Tijdslot)->format('H:i'));
           @endphp
 
           <h6 class="mt-4 mb-3 text-uppercase text-light">
@@ -145,8 +108,9 @@
               @php
                 $timeStr = \Illuminate\Support\Carbon::parse($p->Tijdslot)->format('H:i');
                 $label = ($timeStr === $earliestTime) ? 'Vroege entree' : 'Reguliere entree';
-                $price = $currencyFmt ? $currencyFmt->formatCurrency($p->Tarief, 'EUR')
-                                      : ('€ ' . number_format($p->Tarief, 2, ',', '.'));
+                $price = $currencyFmt
+                  ? $currencyFmt->formatCurrency($p->Tarief, 'EUR')
+                  : ('€ ' . number_format($p->Tarief, 2, ',', '.'));
               @endphp
               <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
                 <div class="card price-card h-100">
@@ -191,8 +155,6 @@
         </div>
       @endif
     </div>
-
-
   </section>
 
   <!-- Scroll to Top Button -->
@@ -201,13 +163,10 @@
   </button>
 
   <script>
-    // Show button when scrolled down
     window.addEventListener('scroll', function() {
       document.getElementById('scrollTopBtn').style.display =
         window.scrollY > 200 ? 'block' : 'none';
     });
-
-    // Scroll to top on click
     document.getElementById('scrollTopBtn').onclick = function() {
       window.scrollTo({top: 0, behavior: 'smooth'});
     };

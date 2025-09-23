@@ -1,26 +1,21 @@
 {
-    "$schema": "https://json.schemastore.org/package.json",
-    "private": true,
-    "type": "module",
-    "scripts": {
-        "build": "vite build",
-        "dev": "vite",
-<<<<<<< HEAD
-        "server": "concurrently \"npm run dev\" \"php artisan serve\""
-
-=======
-        "server": "concurrently \"vite\" \"php artisan serve\""
->>>>>>> 3a465e1e2ff37ef92f393aa14bb154825221052b
-    },
-    "devDependencies": {
-        "@tailwindcss/vite": "^4.0.0",
-        "axios": "^1.11.0",
-        "concurrently": "^9.0.1",
-        "laravel-vite-plugin": "^2.0.0",
-        "tailwindcss": "^4.0.0",
-        "vite": "^7.0.4"
-    },
-    "dependencies": {
-        "bootstrap": "^5.3.8"
-    }
+  "$schema": "https://json.schemastore.org/package.json",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite",
+    "server": "concurrently \"vite\" \"php artisan serve\""
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.0.0",
+    "axios": "^1.11.0",
+    "concurrently": "^9.0.1",
+    "laravel-vite-plugin": "^2.0.0",
+    "tailwindcss": "^4.0.0",
+    "vite": "^7.0.4"
+  },
+  "dependencies": {
+    "bootstrap": "^5.3.8"
+  }
 }

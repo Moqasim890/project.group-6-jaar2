@@ -14,6 +14,6 @@ class Evenementmodel extends Model
     public $timestamps = false;
 
     public function stands() {
-        return $this->hasMany(Stand::class, 'EvenementId');
+        return $this->hasMany(Standmodel::class, 'EvenementId');
     }
 }

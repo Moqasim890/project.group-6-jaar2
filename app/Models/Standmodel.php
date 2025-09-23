@@ -14,7 +14,7 @@ class Standmodel extends Model
     public $timestamps = false;
 
     public function evenement() {
-        return $this->belongsTo(Evenement::class, 'EvenementId');
+        return $this->belongsTo(Evenementmodel::class, 'EvenementId');
     }
 
     // keep this here; it won’t break anything even if Verkoper is added later
