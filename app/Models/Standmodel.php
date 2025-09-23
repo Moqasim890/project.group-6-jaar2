@@ -4,21 +4,33 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Standmodel extends Model
+class StandModel extends Model
 {
-    protected $table = 'stands';
-    protected $fillable = [
-        'EvenementId','VerkoperId','StandType','Prijs',
-        'VerhuurdStatus','IsActief','Opmerking',
-    ];
+    protected $table = 'stand'; // in ERD it's singular "Stand"
+    protected $primaryKey = 'Id';
     public $timestamps = false;
 
-    public function evenement() {
-        return $this->belongsTo(Evenementmodel::class, 'EvenementId');
-    }
+    protected $fillable = [
+        'VerkoperId',
+        'StandType',
+        'Prijs',
+        'VerhuurdStatus',
+        'IsActief',
+        'Opmerking',
+        'DatumAangemaakt',
+        'DatumGewijzigd',
+    ];
 
-    // keep this here; it won’t break anything even if Verkoper is added later
-    //public function verkoper() {
-       // return $this->belongsTo(\App\Models\Verkoper::class, 'VerkoperId');
-    //}
+    protected $casts = [
+        'VerhuurdStatus'   => 'boolean',
+        'IsActief'         => 'boolean',
+        'DatumAangemaakt'  => 'datetime',
+        'DatumGewijzigd'   => 'datetime',
+    ];
+
+    // Relations
+    public function verkoper()
+    {
+        return $this->belongsTo(VerkoperModel ::class, 'VerkoperId');
+    }
 }

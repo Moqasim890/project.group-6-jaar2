@@ -40,6 +40,11 @@
 
         <div class="offcanvas-body">
           <ul class="navbar-nav ms-auto">
+             <li class="nav-item">
+              <a class="nav-link {{ request()->is('verkoper*') ? 'active' : '' }}" href="{{ route('verkoper.index') }}">
+                Verkoper
+              </a>
+            </li>
             <li class="nav-item">
               <a class="nav-link {{ request()->is('tickets*') ? 'active' : '' }}" href="{{ route('Tickets.index') }}">
                 Tickets
@@ -70,6 +75,8 @@
                 Privacy
               </a>
             </li>
+           
+
           </ul>
         </div>
       </div> {{-- /offcanvas --}}
