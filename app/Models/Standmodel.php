@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class StandModel extends Model
 {
-    protected $table = 'stand'; // in ERD it's singular "Stand"
+    protected $table = 'stands'; // in ERD it's singular "Stand"
     protected $primaryKey = 'Id';
     public $timestamps = false;
 
