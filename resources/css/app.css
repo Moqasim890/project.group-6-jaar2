@@ -95,34 +95,3 @@ nav, footer, main { position: relative; z-index: 1; }
   transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
   border-radius:1rem;
 }
-.price-card:hover{
-  transform:translateY(-4px);
-  box-shadow:0 16px 40px rgba(0,0,0,.25);
-  border-color:#f8d210;
-}
-.price-badge{ border-radius:.6rem; font-weight:700; }
-
-/* ===== Glass Panels ===== */
-.glass{
-  background:rgba(255,255,255,.10);
-  border:1px solid rgba(255,255,255,.18);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border-radius:1.25rem;
-  box-shadow:0 10px 30px rgba(0,0,0,.25);
-}
-
-/* ===== Utilities ===== */
-.muted{ color:#6c757d; }
-.divider{ height:1px; background:rgba(0,0,0,.08); }
-
-/* Dark-mode tweaks */
-@media (prefers-color-scheme: dark){
-  .price-card{ background:rgba(255,255,255,.08); }
-  .divider{ background:rgba(255,255,255,.12); }
-}
-
-/* ===== Footer ===== */
-footer{ background:#111; color:#aaa; }
-footer a{ color:#f8d210; text-decoration:none; }
-footer a:hover{ color:#fff200; }

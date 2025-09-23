@@ -16,3 +16,5 @@ Route::resource('stands', StandController::class);
 Route::fallback(function () {
     return redirect()->route('onderhoud');
 });
+
+
