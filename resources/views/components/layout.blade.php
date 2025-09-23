@@ -29,6 +29,7 @@
       <div class="offcanvas-body">
         <ul class="navbar-nav ms-auto">
           <li class="nav-item"><a class="nav-link" href="{{ url('/tickets') }}">Tickets</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ route('evenements.index') }}">Events</a></li>
           <li class="nav-item"><a class="nav-link" href="{{ url('/stands') }}">Stands</a></li>
           <li class="nav-item"><a class="nav-link" href="{{ url('/info') }}">Info</a></li>
           <li class="nav-item"><a class="nav-link" href="{{ url('/contact') }}">Contact</a></li>
