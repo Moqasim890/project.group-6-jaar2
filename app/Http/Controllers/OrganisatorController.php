@@ -1,0 +1,77 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\OrganisatorModel;
+use Illuminate\Http\Request;
+
+class OrganisatorController extends Controller
+{
+    public function GetAllVerkopers()
+    {
+        // alle organisatoren ophalen
+        $verkopers = OrganisatorModel::all();
+
+        // doorgeven aan view
+        return view('verkopers', [
+            'verkopers' => $verkopers
+        ]);
+    }
+
+
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        //
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        //
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(OrganisatorModel $OrganisatorModel)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(OrganisatorModel $OrganisatorModel)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, OrganisatorModel $OrganisatorModel)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(OrganisatorModel $OrganisatorModel)
+    {
+        //
+    }
+}
