@@ -2,19 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Stand;
-use App\Models\Evenement;
+use App\Models\Standmodel;
+use App\Models\Evenementmodel;
 use Illuminate\Http\Request;
 
 class StandController extends Controller
 {
     public function index() {
-        $stands = Stand::with('evenement')->latest('DatumAangemaakt')->paginate(10);
+        $stands = Standmodel::with('evenement')->latest('DatumAangemaakt')->paginate(10);
         return view('stands.index', compact('stands'));
     }
 
     public function create() {
-        $events = Evenement::orderBy('Datum','desc')->get(['id','Naam']);
+        $events = Evenementmodel::orderBy('Datum','desc')->get(['id','Naam']);
         return view('stands.create', compact('events'));
     }
 
@@ -28,16 +28,16 @@ class StandController extends Controller
             'IsActief'     => 'boolean',
             'Opmerking'    => 'nullable|string',
         ]);
-        Stand::create($data);
+        Standmodel::create($data);
         return redirect()->route('stands.index')->with('ok','Stand gemaakt.');
     }
 
-    public function edit(Stand $stand) {
-        $events = Evenement::orderBy('Datum','desc')->get(['id','Naam']);
+    public function edit(Standmodel $stand) {
+        $events = Evenementmodel::orderBy('Datum','desc')->get(['id','Naam']);
         return view('stands.edit', compact('stand','events'));
     }
 
-    public function update(Request $request, Stand $stand) {
+    public function update(Request $request, Standmodel $stand) {
         $data = $request->validate([
             'EvenementId'  => 'required|exists:evenements,id',
             'VerkoperId'   => 'required|integer',
@@ -51,7 +51,7 @@ class StandController extends Controller
         return redirect()->route('stands.index')->with('ok','Stand bijgewerkt.');
     }
 
-    public function destroy(Stand $stand) {
+    public function destroy(Standmodel $stand) {
         $stand->delete();
         return back()->with('ok','Stand verwijderd.');
     }

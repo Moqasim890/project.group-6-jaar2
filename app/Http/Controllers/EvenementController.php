@@ -3,12 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Evenement;
+use App\Models\Evenementmodel;
 use Illuminate\Http\Request;
 
 class EvenementController extends Controller
 {
     public function index() {
-        $events = Evenement::orderBy('Datum','desc')->paginate(10);
+        $events = Evenementmodel::orderBy('Datum','desc')->paginate(10);
         return view('evenements.index', compact('events'));
     }
 
@@ -26,15 +27,15 @@ class EvenementController extends Controller
             'IsActief' => 'boolean',
             'Opmerking' => 'nullable|string',
         ]);
-        Evenement::create($data);
+        Evenementmodel::create($data);
         return redirect()->route('evenements.index')->with('ok','Evenement gemaakt.');
     }
 
-    public function edit(Evenement $evenement) {
+    public function edit(Evenementmodel $evenement) {
         return view('evenements.edit', compact('evenement'));
     }
 
-    public function update(Request $request, Evenement $evenement) {
+    public function update(Request $request, Evenementmodel $evenement) {
         $data = $request->validate([
             'Naam' => 'required|string|max:200',
             'Datum' => 'required|date',
@@ -48,7 +49,7 @@ class EvenementController extends Controller
         return redirect()->route('evenements.index')->with('ok','Evenement bijgewerkt.');
     }
 
-    public function destroy(Evenement $evenement) {
+    public function destroy(Evenementmodel $evenement) {
         $evenement->delete();
         return back()->with('ok','Evenement verwijderd.');
     }
