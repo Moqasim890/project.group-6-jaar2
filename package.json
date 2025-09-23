@@ -5,8 +5,12 @@
     "scripts": {
         "build": "vite build",
         "dev": "vite",
+<<<<<<< HEAD
         "server": "concurrently \"npm run dev\" \"php artisan serve\""
 
+=======
+        "server": "concurrently \"vite\" \"php artisan serve\""
+>>>>>>> 3a465e1e2ff37ef92f393aa14bb154825221052b
     },
     "devDependencies": {
         "@tailwindcss/vite": "^4.0.0",

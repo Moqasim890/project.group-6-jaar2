@@ -17,4 +17,9 @@ Route::fallback(function () {
     return redirect()->route('onderhoud');
 });
 
+<<<<<<< HEAD
 
+=======
+Route::get('/tickets', [App\Http\Controllers\TicketController::class, 'index'])->name('tickets.index');
+Route::get('/tickets/{evenement}', [App\Http\Controllers\TicketController::class, 'show'])->name('tickets.show');
+>>>>>>> 3a465e1e2ff37ef92f393aa14bb154825221052b
