@@ -24,6 +24,40 @@
             </div>
           </div>
         </div>
+        <div class="col-lg-5">
+          <div class="hero p-4 p-lg-5 h-100 bg-white rounded-4 shadow">
+            <h5 class="fw-semibold mb-3">Event details</h5>
+            <div class="d-grid gap-3">
+              <div>
+                <div class="small text-uppercase muted">Locatie</div>
+                <div>Van Nellefabriek, Rotterdam</div>
+              </div>
+              <div class="border-top"></div>
+              <div>
+                <div class="small text-uppercase muted">Datum</div>
+                <div>
+                  @if(isset($event) && $event)
+                    {{ \Illuminate\Support\Carbon::parse($event->Datum)->translatedFormat('j F Y') }} <span class="muted">(weekend)</span>
+                  @else
+                    November (exacte data t.b.c.)
+                  @endif
+                </div>
+              </div>
+              <div class="border-top"></div>
+              <div>
+                <div class="small text-uppercase muted">Capaciteit per tijdslot</div>
+                <div>
+                  @if(isset($event) && $event) {{ $event->AantalTicketsPerTijdslot }} tickets
+                  @else 500 tickets
+                  @endif
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
         {{-- Hero Sidebar --}}
         <div class="col-lg-5">

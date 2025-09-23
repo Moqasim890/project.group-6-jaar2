@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration {
     public function up(): void {
@@ -22,6 +23,75 @@ return new class extends Migration {
             $table->index('SpecialeStatus');
             $table->index('VerkooptSoort');
         });
+
+        DB::table('verkopers')->insert([
+            [
+                'Naam' => 'Verkoper 1',
+                'SpecialeStatus' => 'GEEN',
+                'VerkooptSoort' => 'SNEAKERS',
+                'StandType' => 'A',
+                'Dagen' => 'EEN',
+                'LogoUrl' => null,
+            ],
+            [
+                'Naam' => 'Verkoper 2',
+                'SpecialeStatus' => 'PARTNER',
+                'VerkooptSoort' => 'ETEN_DRINKEN',
+                'StandType' => 'AA',
+                'Dagen' => 'TWEE',
+                'LogoUrl' => null,
+            ],
+            [
+                'Naam' => 'Verkoper 3',
+                'SpecialeStatus' => 'GEEN',
+                'VerkooptSoort' => 'KIDS_CORNER',
+                'StandType' => 'AAplus',
+                'Dagen' => 'EEN',
+                'LogoUrl' => null,
+            ],
+            [
+                'Naam' => 'Verkoper 4',
+                'SpecialeStatus' => 'GEEN',
+                'VerkooptSoort' => 'CUSTOMIZERS',
+                'StandType' => null,
+                'Dagen' => 'TWEE',
+                'LogoUrl' => null,
+            ],
+            [
+                'Naam' => 'Verkoper 5',
+                'SpecialeStatus' => 'PARTNER',
+                'VerkooptSoort' => 'TATTOO',
+                'StandType' => 'A',
+                'Dagen' => 'EEN',
+                'LogoUrl' => null,
+            ],
+            [
+                'Naam' => 'Verkoper 6',
+                'SpecialeStatus' => 'GEEN',
+                'VerkooptSoort' => 'BARBERSHOP',
+                'StandType' => 'AA',
+                'Dagen' => 'TWEE',
+                'LogoUrl' => null,
+            ],
+            [
+                'Naam' => 'Verkoper 7',
+                'SpecialeStatus' => 'GEEN',
+                'VerkooptSoort' => 'DJ_SET',
+                'StandType' => 'AAplus',
+                'Dagen' => 'EEN',
+                'LogoUrl' => null,
+            ],
+            [
+                'Naam' => 'Verkoper 8',
+                'SpecialeStatus' => 'GEEN',
+                'VerkooptSoort' => 'OVERIG',
+                'StandType' => null,
+                'Dagen' => 'TWEE',
+                'LogoUrl' => null,
+            ],
+
+        ]);
+
     }
     public function down(): void {
         Schema::dropIfExists('verkopers');

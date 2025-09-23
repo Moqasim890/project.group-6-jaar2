@@ -20,7 +20,7 @@ return new class extends Migration {
 
             $table->index('PrijsId');
             $table->index('EvenementId');
-            $table->check('AantalTickets > 0');
+            // $table->check('AantalTickets > 0');
         });
     }
     public function down(): void {

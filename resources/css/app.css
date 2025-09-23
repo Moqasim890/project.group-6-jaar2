@@ -1,5 +1,11 @@
+<<<<<<< HEAD
 /* 1) Tailwind v4 */
 @import "tailwindcss";
+=======
+/* @import 'tailwindcss'; */
+@import "bootstrap/dist/css/bootstrap.min.css";
+
+>>>>>>> 3a465e1e2ff37ef92f393aa14bb154825221052b
 
 /* 2) Tailwind scan-paths */
 @source "../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php";
@@ -95,3 +101,6 @@ nav, footer, main { position: relative; z-index: 1; }
   transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
   border-radius:1rem;
 }
+
+
+
