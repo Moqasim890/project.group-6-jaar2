@@ -41,7 +41,7 @@
         <div class="offcanvas-body">
           <ul class="navbar-nav ms-auto">
             <li class="nav-item">
-              <a class="nav-link {{ request()->is('tickets*') ? 'active' : '' }}" href="{{ url('/tickets') }}">
+              <a class="nav-link {{ request()->is('tickets*') ? 'active' : '' }}" href="{{ route('Tickets.index') }}">
                 Tickets
               </a>
             </li>

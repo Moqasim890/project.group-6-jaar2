@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EvenementController;
 use App\Http\Controllers\StandController;
+use App\Http\Controllers\TicketController;
 
 // onderhoud pagina
 Route::view('/onderhoud', 'onderhoud')->name('onderhoud');
@@ -11,6 +12,8 @@ Route::view('/onderhoud', 'onderhoud')->name('onderhoud');
 Route::get('/', fn() => view('welcome'))->name('home');
 Route::resource('evenements', EvenementController::class);
 Route::resource('stands', StandController::class);
+Route::resource('Tickets', TicketController::class);
+
 
 // fallback: ALLES wat niet bestaat -> onderhoud
 Route::fallback(function () {

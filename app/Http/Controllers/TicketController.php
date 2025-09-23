@@ -20,7 +20,7 @@ class TicketController extends Controller
         $evenementen = EvenementModel::all();
         $prijzen = PrijsModel::all();
 
-        return view('tickets.index', compact( 'evenementen', 'prijzen'));
+        return view('Tickets.index', compact( 'evenementen', 'prijzen'));
     }
 
     /**
@@ -48,7 +48,7 @@ class TicketController extends Controller
         $prijzen = PrijsModel::where('EvenementId', $evenement->id)->get()->groupBy('Datum');
         // echo $prijzen;
 
-        return view('tickets.show', compact( 'prijzen', 'evenement'));
+        return view('Tickets.show', compact( 'prijzen', 'evenement'));
     }
 
     /**
