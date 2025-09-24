@@ -123,4 +123,7 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+
+    'onderhoud' => env('APP_ONDERHOUD', false),
+
 ];

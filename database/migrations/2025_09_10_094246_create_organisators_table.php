@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration {
     public function up(): void {
@@ -16,7 +17,17 @@ return new class extends Migration {
             $table->timestamp('DatumAangemaakt')->useCurrent();
             $table->timestamp('DatumGewijzigd')->useCurrent()->useCurrentOnUpdate();
         });
+
+        DB::table('organisators')->insert([
+            [
+                'Naam' => 'Admin',
+                'Gebruikersnaam' => 'admin',
+                // Wachtwoord is 'password', gehashed met bcrypt
+                'Wachtwoord' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+            ],
+        ]);
     }
+
     public function down(): void {
         Schema::dropIfExists('organisators');
     }

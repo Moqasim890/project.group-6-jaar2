@@ -1,11 +1,121 @@
-@import 'tailwindcss';
+/* ===== 1) Frameworks ===== */
 
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../storage/framework/views/*.php';
-@source '../**/*.blade.php';
-@source '../**/*.js';
+/* Keep Bootstrap first so Tailwind utilities can override it when needed */
+@import "bootstrap/dist/css/bootstrap.min.css";
 
+/* Make sure Tailwind actually loads (uncommented).
+   Tailwind v4:      @import "tailwindcss";
+   Tailwind v3:      @tailwind base; @tailwind components; @tailwind utilities; */
+@import "tailwindcss";
+
+/* ===== 2) Tailwind scan-paths (v4) ===== */
+@source "../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php";
+@source "../../storage/framework/views/*.php";
+@source "../**/*.blade.php";
+@source "../**/*.js";
+
+/* ===== 3) Theme tokens ===== */
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-sans: "Instrument Sans", ui-sans-serif, system-ui, sans-serif,
+               "Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+}
+
+/* ===== 4) Global background with safe overlay =====
+   Put the overlay BEHIND everything so it never covers content. */
+html, body {
+  min-height: 100%;
+}
+body{
+  font-family: var(--font-sans);
+  min-height: 100vh;
+  /* Image on the :before layer instead (see below) so body can stay simple */
+}
+
+/* Background image + dark veil that never intercepts clicks */
+body::before{
+  content:"";
+  position: fixed;       /* fixed so it doesn't scroll out of view */
+  inset:0;
+  z-index:-1;            /* always behind page content */
+  background:
+    linear-gradient(rgba(0,0,0,.55), rgba(0,0,0,.55)),
+    url("../img/mo.png") center / cover no-repeat;
+  pointer-events:none;
+}
+
+/* ===== 5) Navbar ===== */
+.navbar {
+  background: rgba(0,0,0,.85) !important;
+  backdrop-filter: saturate(120%) blur(4px);
+}
+.navbar .nav-link{ color:rgba(255,255,255,.75) !important; }
+.navbar .nav-link:hover,
+.navbar .nav-link:focus,
+.navbar .nav-link.active{ color:#fff !important; }
+
+/* ≥ lg: standard flex layout */
+@media (min-width: 992px){
+  .navbar-expand-lg .navbar-collapse { display:flex !important; }
+}
+
+/* ≤ lg: dropdown panel below bar */
+@media (max-width: 991.98px){
+  .navbar { overflow: visible !important; }
+  .navbar .container { position: relative; }
+
+  #mainNav.collapse{
+    position: absolute;
+    top: 100%;
+    left: 0; right: 0;
+    width: 100%;
+  }
+  #mainNav.collapse.show{
+    display: block;
+    background: rgba(0,0,0,.95);
+    z-index: 1050;
+    padding: .5rem 1rem;
+  }
+  #mainNav .navbar-nav{ flex-direction: column; }
+  #mainNav .nav-link{ padding:.5rem 0; }
+}
+
+.navbar.sticky-top{ z-index:1030; }
+
+/* ===== 6) Buttons ===== */
+.btn-neon{
+  background:#f8d210; color:#000; font-weight:700;
+  border-radius:999px; padding-inline:1.25rem;
+  transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+}
+.btn-neon:hover{
+  background:#fff200; transform: translateY(-2px) scale(1.05);
+  box-shadow:0 8px 20px rgba(248,210,16,.45);
+}
+
+/* ===== 7) Badges ===== */
+.badge-neon{
+  background:#f8d210 !important; color:#111 !important; font-weight:700; border-radius:.5rem;
+}
+
+/* ===== 8) Cards ===== */
+.price-card{
+  border:1px solid rgba(255,255,255,.15);
+  background:rgba(255,255,255,.9);
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+  border-radius:1rem;
+}
+
+/* Optional: a generic "glass" panel you use in hero/sidebars */
+.glass{
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.18);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 1rem;
+}
+
+/* Optional: make Bootstrap pagination visible on dark bg */
+.page-link { color: #111; }
+.page-item.active .page-link{
+  background-color: #111; border-color: #111; color:#fff;
 }
