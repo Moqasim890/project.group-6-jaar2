@@ -4,16 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Evenementmodel extends Model
+class EvenementModel extends Model
 {
+    //
     protected $table = 'evenements';
-    protected $fillable = [
-        'Naam','Datum','Locatie','AantalTicketsPerTijdslot',
-        'BeschikbareStands','IsActief','Opmerking',
-    ];
-    public $timestamps = false;
-
-    public function stands() {
-        return $this->hasMany(Standmodel::class, 'EvenementId');
-    }
+    protected $primaryKey = 'id';
+    public $timestamps = true;
 }
