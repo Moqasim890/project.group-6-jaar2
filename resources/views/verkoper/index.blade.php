@@ -1,11 +1,12 @@
 
     <x-layout>
-
+    @vite(['resources/css/verkopers-style.css'])
     <div class="container">
         <div class="row mt-5">
             <div class="col-12">
                 <h1 class="page-titel">Alle verkopers</h1>
                 <p class="page-tekst">meer info over verkopers is hier te vinden</p>
+                <a href="/verkoper/create" id="add-verkoper">Verkoper Toevoegen +</a>
                 <table class="table">
                     <thead>
                         <th scope="col">Naam</th>

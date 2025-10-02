@@ -41,6 +41,30 @@ table {
     text-align: left;
 }
 
+#add-verkoper {
+    background-color: #97CAA8;
+    border: solid 2px #024800;
+    color: white;
+    text-decoration: none;
+}
+
+.form-toevoegen-verkoper {
+    background-color: white;
+    width: 500px;
+    height: 500px;
+}
+
+.form-toevoegen-verkoper {
+    align-items: center;
+}
+
+.form-toevoegen-verkoper input {
+    width: 100%;
+}
+
+.form-toevoegen-verkoper input:hover {
+    border: black 3px solid;
+}
 @media (max-width: 768px) {
     .page-titel {
         text-align: center;
