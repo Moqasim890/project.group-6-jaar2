@@ -49,22 +49,46 @@ table {
 }
 
 .form-toevoegen-verkoper {
-    background-color: white;
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.18);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     width: 500px;
     height: 500px;
 }
 
-.form-toevoegen-verkoper {
-    align-items: center;
+.form-toevoegen-verkoper input {
+    border-radius: 5px;
+    background-color: white;
+    height: 40px;
+    width: 80%;
 }
 
-.form-toevoegen-verkoper input {
-    width: 100%;
+.form-toevoegen-verkoper input::placeholder {
+    padding-left: 10px;
 }
 
 .form-toevoegen-verkoper input:hover {
     border: black 3px solid;
 }
+
+.form-toevoegen-verkoper button {
+    background-color: rgb(0, 0, 0);
+    color: rgb(255, 255, 255);
+    font-weight: bold;
+    border: white 1px solid;
+    border-radius: 10px;
+    width: 50%;
+    height:40px;
+}
+
+.form-toevoegen-verkoper button:hover {
+    background-color: rgb(255, 255, 255);
+    color: rgb(0, 0, 0);
+    font-weight: bold;
+    border: black 3px solid;
+}
+
 @media (max-width: 768px) {
     .page-titel {
         text-align: center;

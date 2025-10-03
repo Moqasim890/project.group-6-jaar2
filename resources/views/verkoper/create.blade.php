@@ -1,30 +1,35 @@
 <x-layout>
     @vite(['resources/css/verkopers-style.css'])
-    <div class="container">
+    <div class="container d-flex justify-content-center align-items-center mt-4">
         <div class="row">
-            <div class="col-12 d-flex justify-content-center align-items-center" style="height: 100dvh;">
-                <div class="form-toevoegen-verkoper">
-                    <form action="" method="POST">
-                        <h1>Test</h1>
-                        <p>bla bla bla</p>
-                        <label for="test1">test</label>
-                        <input name="test1" type="text" placeholder="test">
+            <div class="col-12">
+                    <form action="" method="POST" class="form-toevoegen-verkoper justify-content-center align-items-center">
+                        <h1 class="text-center mt-5">Titel</h1>
 
-                        <label for="test2">test</label>
-                        <input name="test2" type="text" placeholder="test">
+                        <div class="mb-3 d-flex justify-content-center">
+                            <input name="test1" type="text" placeholder="test">
+                        </div>
 
-                        <label for="test3">test</label>
-                        <input name="test3" type="text" placeholder="test">
-                        
-                        <label for="test4">test</label>
-                        <input name="test4" type="text" placeholder="test">
+                        <div class="mb-3 d-flex justify-content-center">
+                            <input name="test1" type="text" placeholder="test">
+                        </div>
 
-                        <label for="test5">test</label>
-                        <input name="test5" type="text" placeholder="test">
+                        <div class="mb-3 d-flex justify-content-center">
+                            <input name="test1" type="text" placeholder="test">
+                        </div>
 
-                        <button type="submit" class="btn btn-succes">toevoegen</button>
+                        <div class="mb-3 d-flex justify-content-center">
+                            <input name="test1" type="text" placeholder="test">
+                        </div>
+
+                        <div class="mb-3 d-flex justify-content-center">
+                            <input name="test1" type="text" placeholder="test">
+                        </div>
+
+                        <div class=" d-flex justify-content-center">
+                            <button type="submit" class="">toevoegen</button>
+                        </div>
                     </form>
-                </div>
             </div>
         </div>
     </div>
