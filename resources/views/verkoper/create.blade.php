@@ -3,6 +3,7 @@
     <div class="container d-flex justify-content-center align-items-center mt-4">
         <div class="row">
             <div class="col-12">
+                <?php echo "hallo mazin! alles goed?" ?>
                     <form action="" method="POST" class="form-toevoegen-verkoper justify-content-center align-items-center">
                         <h1 class="text-center mt-5">Titel</h1>
 
