@@ -58,14 +58,12 @@ table {
 }
 
 .form-toevoegen-verkoper input {
+    padding-left: 10px;
+    caret-color: red;
     border-radius: 5px;
     background-color: white;
     height: 40px;
     width: 80%;
-}
-
-.form-toevoegen-verkoper input::placeholder {
-    padding-left: 10px;
 }
 
 .form-toevoegen-verkoper input:hover {
