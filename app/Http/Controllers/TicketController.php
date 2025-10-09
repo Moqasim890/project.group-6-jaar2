@@ -15,7 +15,8 @@ class TicketController extends Controller
     {
         $evenementen = TicketModel::getAllEvents();
 
-        return view('Tickets.index', compact( 'evenementen', 'prijzen'));
+
+        return view('Tickets.index', compact( 'evenementen'));
     }
 
     /**

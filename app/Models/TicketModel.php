@@ -7,30 +7,37 @@ use Illuminate\Support\Facades\DB;
 
 class TicketModel extends Model
 {
-    function getAllTickets()
+    public static function getAllEvents()
+    {
+        return DB::select('CALL SP_GetAllEvents()');
+    }
+
+    public static function getAllTickets()
     {
         return DB::select('CALL SP_GetAllTickets()');
     }
 
-    function getTicketById($id)
+    public static function getTicketById($id)
     {
-        return DB::select('CALL SP_GetTicketById(?)', [$id]);
+        return DB::select('CALL SP_GetTicketByID(?)', [$id]);
     }
 
-    function createTicket($data)
+    public static function createTicket($data)
     {
-        return DB::select('CALL SP_CreateTicket(?, ?, ?)', [$data['name'], $data['price'], $data['event_id']]);
+        return DB::select('CALL SP_CreateTicket(?, ?, ?, ?, ?)', [$data['id'], $data['prijs'], $data['tijdslot'], $data['datum'], $data['Event']]);
     }
-    function getTicketsByEventId($eventId)
+
+    public static function getTicketsByEventId($eventId)
     {
         return DB::select('CALL SP_GetTicketsByEventId(?)', [$eventId]);
     }
 
-    function updateTicket($id, $data)
+    public static function updateTicket($id, $data)
     {
         return DB::select('CALL SP_UpdateTicket(?, ?, ?, ?)', [$id, $data['name'], $data['price'], $data['event_id']]);
     }
-    function deleteTicket($id)
+
+    public static function deleteTicket($id)
     {
         return DB::select('CALL SP_DeleteTicket(?)', [$id]);
     }
