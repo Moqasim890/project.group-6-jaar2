@@ -22,7 +22,7 @@
                 </p>
 
                 <!-- Make the whole card clickable -->
-                <a href="{{ route('Tickets.show', $event) }}" class="stretched-link"></a>
+                <a href="{{ route('Tickets.showkopen', $event->id) }}" class="stretched-link"></a>
               </div>
             </div>
           </div>

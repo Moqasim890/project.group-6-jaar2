@@ -14,8 +14,6 @@ class TicketController extends Controller
     public function index()
     {
         $evenementen = TicketModel::getAllEvents();
-
-
         return view('Tickets.index', compact( 'evenementen'));
     }
 
@@ -24,7 +22,7 @@ class TicketController extends Controller
      */
     public function create()
     {
-        //
+        return view('Tickets.create');
     }
 
     /**
@@ -32,7 +30,8 @@ class TicketController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        TicketModel::createTicket($request->all());
+        return redirect()->route('Tickets.index');
     }
 
     /**
@@ -40,32 +39,61 @@ class TicketController extends Controller
      */
     public function show()
     {
-        //van de evenementen pagina de tickets tonen(prijzen)
-        return "";
-        //view('Tickets.show', compact( 'prijzen', 'evenement'));
+
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(TicketModel $ticketModel)
+    public function edit($id)
     {
-        //
+        $ticket = TicketModel::getTicketByID($id);
+        return view('Tickets.edit', compact('ticket'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, TicketModel $ticketModel)
+    public function update(Request $request, $id)
     {
-        //
+        TicketModel::updateTicket($id, $request->all());
+        return redirect()->route('Tickets.show', $id);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(TicketModel $ticketModel)
+    public function destroy($id)
     {
-        //
+        TicketModel::deleteTicket($id);
+        return redirect()->route('Tickets.index');
+    }
+
+    public function showkopen($id){
+
+        $evenement = TicketModel::getEventByID($id);
+        $prijzen = TicketModel::getTicketsByEventID($id);
+        return view('Tickets.kopen', compact('evenement', 'prijzen'));
+    }
+
+    public function kopen(){
+        $data = request()->validate([
+            'evenement_id' => 'required|exists:evenements,id',
+            'aantal' => 'required|array',
+        ]);
+
+        $data['ticketids'] = array_keys($data['aantal']);
+        $res = TicketModel::kopenTicket($data);
+
+        if($res){
+            return redirect()->route('Tickets.index');
+        }
+        else{
+            return redirect()->route("Tickets.kopen");
+        }
+        // Verwerk de aankoop van tickets hier
+
+        // return redirect()->route('Tickets.index');
+    
     }
 }
