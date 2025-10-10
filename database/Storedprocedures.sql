@@ -12,6 +12,30 @@ DROP PROCEDURE IF EXISTS SP_UpdateTicket $$
 DROP PROCEDURE IF EXISTS SP_DeleteTicket $$
 DROP PROCEDURE IF EXISTS SP_GetEventByID $$
 DROP PROCEDURE IF EXISTS SP_GetAllTickets_NoParam $$
+DROP PROCEDURE IF EXISTS SP_KopenTicket $$
+DROP PROCEDURE IF EXISTS SP_Ticketophalen $$
+
+CREATE PROCEDURE SP_KopenTicket(IN bezoekerid INT, IN evenementid INT, IN prijsid INT, IN aantalTickets INT, IN datum date)
+BEGIN
+    INSERT INTO tickets(BezoekerId, EvenementId, PrijsId, AantalTickets, Datum)
+    VALUES(bezoekerid, evenementid, prijsid, aantalTickets, datum);
+    SELECT ROW_COUNT() AS Affected;
+END $$
+
+CREATE PROCEDURE SP_Ticketophalen(IN bezoekerid INT, IN datum date)
+BEGIN
+    SELECT
+        BezoekerId,
+        EvenementId,
+        PrijsId,
+        AantalTickets,
+        Datum
+    FROM Tickets
+    WHERE
+        Datum = datum && 
+        Bezoekerid = bezoekerid;
+END $$
+
 
 CREATE PROCEDURE SP_GetEventByID(IN eventId INT)
 BEGIN

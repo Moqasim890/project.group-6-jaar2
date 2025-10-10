@@ -66,7 +66,7 @@ class TicketModel extends Model
         return DB::select('CALL SP_DeleteTicket(?)', [$id]);
     }
 
-//TODO: [ ] stored procedure afmaken
+//TODO: stored procedure afmaken
     public static function kopenTicket($data){
         return DB::select('CALL SP_KopenTicket(?,?,?,?)', $data);
     }
