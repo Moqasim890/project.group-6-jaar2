@@ -57,13 +57,29 @@ table {
     height: 500px;
 }
 
-.form-toevoegen-verkoper input {
-    padding-left: 10px;
+.form-toevoegen-verkoper input, select {
     border-radius: 5px;
     background-color: white;
     height: 40px;
-    width: 80%;
+    width: 100%;
 }
+
+label:has(+ input:required)::after {
+    content: '*' / 'Verplicht';
+    color: red;
+}
+
+label:has(+ select:required)::after {
+    content: '*' / 'Verplicht';
+    color: red;
+}
+
+label:has(+ input:optional)::after {
+    content: '(Optioneel)';
+    margin-left: 0.25rem;
+    
+}
+
 
 .form-toevoegen-verkoper input:hover {
     border: black 3px solid;

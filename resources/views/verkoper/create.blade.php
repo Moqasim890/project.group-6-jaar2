@@ -1,37 +1,59 @@
 <x-layout>
     @vite(['resources/css/verkopers-style.css'])
-    <div class="container d-flex justify-content-center align-items-center mt-4">
-        <div class="row">
-            <div class="col-12">
-                <?php echo "hallo mazin! alles goed?" ?>
-                    <form action="" method="POST" class="form-toevoegen-verkoper justify-content-center align-items-center">
-                        <h1 class="text-center mt-5">Titel</h1>
-
-                        <div class="mb-3 d-flex justify-content-center">
-                            <input name="test1" type="text" placeholder="test">
-                        </div>
-
-                        <div class="mb-3 d-flex justify-content-center">
-                            <input name="test1" type="text" placeholder="test">
-                        </div>
-
-                        <div class="mb-3 d-flex justify-content-center">
-                            <input name="test1" type="text" placeholder="test">
-                        </div>
-
-                        <div class="mb-3 d-flex justify-content-center">
-                            <input name="test1" type="text" placeholder="test">
-                        </div>
-
-                        <div class="mb-3 d-flex justify-content-center">
-                            <input name="test1" type="text" placeholder="test">
-                        </div>
-
-                        <div class=" d-flex justify-content-center">
-                            <button type="submit" class="">toevoegen</button>
-                        </div>
-                    </form>
-            </div>
+    <div class="form-toevoegen-verkoper container d-flex justify-content-center align-items-center mt-5 mb-5 h-100 p-3">
+        <div class="col-md-8">
+            <h2 class="text-white">{{ $title }}</h2>
+            <form method="POST" action="{{ route('verkoper.store') }}">
+                @csrf
+                <div class="mb-2 justify-content-center">
+                    <label for="InputName" class="form-label text-white">Naam</label>
+                    <input name="name" type="text" id="InputNaam" required>
+                </div>
+                <div class="mb-2 justify-content-center">
+                    <label for="InputSpecialeStatus" class="form-label text-white">speciale status</label>
+                    <select name="specialeStatus" id="InputSpecialeStatus" required>
+                        <option value="">--Kies--</option>
+                        <option value="1">JA</option>
+                        <option value="0">NEE</option>
+                    </select>
+                </div>
+                <div class="mb-2 justify-content-center">
+                    <label for="InputVerkooptSoort" class="form-label text-white">verkoop soort</label>
+                    <select name="VerkooptSoort" id="verkoopt-soort" class="form-select" required>
+                        <option value="">--Kies--</option>
+                        <option value="SNEAKERS">Sneakers</option>
+                        <option value="ETEN_DRINKEN">Eten & Drinken</option>
+                        <option value="KIDS_CORNER">Kids Corner</option>
+                        <option value="CUSTOMIZERS">Customizers</option>
+                        <option value="TATTOO">Tattoo</option>
+                        <option value="BARBERSHOP">Barbershop</option>
+                        <option value="DJ_SET">DJ Set</option>
+                        <option value="OVERIG">Overig</option>
+                    </select>
+                </div>
+                <div class="mb-2 justify-content-center">
+                    <label for="InputStandType" class="form-label text-white">Stand Type</label>
+                    <select name="standType" id="InputStandType" class="form-select" required>
+                        <option value="">--Kies--</option>
+                        <option value="A">A</option>
+                        <option value="AA">AA</option>
+                        <option value="AAplus">AA+</option>
+                    </select>
+                </div>
+                <div class="mb-2 justify-content-center">
+                    <label for="InputAantalDagen" class="form-label text-white">Aantal Dagen</label>
+                    <select name="aantalDagen" id="InputAantalDagen" class="form-select" required>
+                        <option value="">--Kies--</option>
+                        <option value="EEN">Eén</option>
+                        <option value="TWEE">Twee</option>
+                    </select>
+                </div>
+                <div class="mb-2 justify-content-center">
+                    <label for="InputLogoUrl" class="form-label text-white">Logo URL</label>
+                    <input name="logoUrl" type="text" id="InputLogoUrl">
+                </div>
+                <button type="submit" class="btn btn-primary mt-4 w-100">Verzend</button>
+            </form>
         </div>
     </div>
 </x-layout>

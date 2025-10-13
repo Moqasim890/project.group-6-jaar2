@@ -25,7 +25,9 @@ class VerkoperController extends Controller
      */
     public function create(): View
     {
-        return view('verkoper.create');
+        return view('verkoper.create', [
+            'title' => 'Verkoper toevoegen'
+        ]);
     }
 
     /**
