@@ -15,7 +15,7 @@ class VerkoperController extends Controller
      */
     public function index(): View
     {
-        $verkopers = VerkoperModel::all();
+        $verkopers = [];// VerkoperModel::all();
 
         return view('verkoper.index', compact('verkopers'));
     }

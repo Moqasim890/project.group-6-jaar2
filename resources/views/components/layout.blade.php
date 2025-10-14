@@ -40,6 +40,10 @@
 
         <div class="offcanvas-body">
           <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link {{ request()->is('verkoper*') ? 'active' : '' }}" href="{{ route('verkoper.index') }}">
+                contactpersoon
+              </a>
              <li class="nav-item">
               <a class="nav-link {{ request()->is('verkoper*') ? 'active' : '' }}" href="{{ route('verkoper.index') }}">
                 Verkoper
