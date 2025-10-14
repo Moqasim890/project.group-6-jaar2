@@ -7,6 +7,7 @@
                 <h1 class="page-titel">Alle verkopers</h1>
                 <p class="page-tekst">meer info over verkopers is hier te vinden</p>
                 <a href="/verkoper/create" id="add-verkoper">Verkoper Toevoegen +</a>
+                {{-- {{ $succes }} --}}
                 <table class="table">
                     <thead>
                         <th scope="col">Naam</th>

@@ -15,6 +15,7 @@ Route::resource('evenements', EvenementController::class);
 Route::resource('stands', StandController::class);
 Route::resource('Tickets', TicketController::class);
 Route::resource('verkoper', VerkoperController::class);
+Route::post('/verkoper/create', [VerkoperController::class, 'store'])->name('verkoper.store');
 
 
 

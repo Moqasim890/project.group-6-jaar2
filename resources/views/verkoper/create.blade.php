@@ -6,15 +6,15 @@
             <form method="POST" action="{{ route('verkoper.store') }}">
                 @csrf
                 <div class="mb-2 justify-content-center">
-                    <label for="InputName" class="form-label text-white">Naam</label>
-                    <input name="name" type="text" id="InputNaam" required>
+                    <label for="InputNaam" class="form-label text-white">Naam</label>
+                    <input name="Naam" type="text" id="InputNaam" required>
                 </div>
                 <div class="mb-2 justify-content-center">
                     <label for="InputSpecialeStatus" class="form-label text-white">speciale status</label>
-                    <select name="specialeStatus" id="InputSpecialeStatus" required>
+                    <select name="SpecialeStatus" id="InputSpecialeStatus">
                         <option value="">--Kies--</option>
-                        <option value="1">JA</option>
-                        <option value="0">NEE</option>
+                        <option value="PARTNER">JA</option>
+                        <option value="GEEN">NEE</option>
                     </select>
                 </div>
                 <div class="mb-2 justify-content-center">
@@ -33,7 +33,7 @@
                 </div>
                 <div class="mb-2 justify-content-center">
                     <label for="InputStandType" class="form-label text-white">Stand Type</label>
-                    <select name="standType" id="InputStandType" class="form-select" required>
+                    <select name="StandType" id="InputStandType" class="form-select">
                         <option value="">--Kies--</option>
                         <option value="A">A</option>
                         <option value="AA">AA</option>
@@ -41,8 +41,8 @@
                     </select>
                 </div>
                 <div class="mb-2 justify-content-center">
-                    <label for="InputAantalDagen" class="form-label text-white">Aantal Dagen</label>
-                    <select name="aantalDagen" id="InputAantalDagen" class="form-select" required>
+                    <label for="InputDagen" class="form-label text-white">Aantal Dagen</label>
+                    <select name="Dagen" id="InputDagen" class="form-select">
                         <option value="">--Kies--</option>
                         <option value="EEN">Eén</option>
                         <option value="TWEE">Twee</option>
@@ -50,7 +50,7 @@
                 </div>
                 <div class="mb-2 justify-content-center">
                     <label for="InputLogoUrl" class="form-label text-white">Logo URL</label>
-                    <input name="logoUrl" type="text" id="InputLogoUrl">
+                    <input name="LogoUrl" type="text" id="InputLogoUrl">
                 </div>
                 <button type="submit" class="btn btn-primary mt-4 w-100">Verzend</button>
             </form>

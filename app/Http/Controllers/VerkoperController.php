@@ -10,6 +10,13 @@ use Illuminate\View\View;
 
 class VerkoperController extends Controller
 {
+
+    private $VerkoperModel;
+
+    public function __construct()
+    {
+        $this->VerkoperModel = new VerkoperModel();
+    }
     /**
      * Lijst met alle verkopers.
      */
@@ -33,7 +40,9 @@ class VerkoperController extends Controller
     /**
      * Opslaan van nieuwe verkoper.
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request)
+
+    // Voeg commentaar toe
     {
         $data = $request->validate([
             'Naam'          => 'required|string|max:200',
@@ -46,10 +55,23 @@ class VerkoperController extends Controller
             'Opmerking'     => 'nullable|string',
         ]);
 
-        VerkoperModel::create($data);
+        // Set default values if not present
+        $data['IsActief'] = $data['IsActief'] ?? false;
+        $data['Opmerking'] = $data['Opmerking'] ?? '';
 
-        return redirect()->route('verkoper.index')->with('success', 'Verkoper toegevoegd!');
-        // Als je plural route names gebruikt: ->route('verkopers.index')
+        $newId = $this->VerkoperModel->sp_CreateVerkoper(
+            $data['Naam'],
+            $data['SpecialeStatus'],
+            $data['VerkooptSoort'],
+            $data['StandType'],
+            $data['Dagen'],
+            $data['LogoUrl'],
+            $data['IsActief'],
+            $data['Opmerking']
+        );
+
+        return redirect()->route('verkoper.index')
+                         ->with('success', "Allergeen is succesvol toegevoegd met id" . $newId);
     }
 
     /**

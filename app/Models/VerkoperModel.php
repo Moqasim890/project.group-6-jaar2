@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class VerkoperModel extends Model
 {
@@ -36,4 +37,24 @@ class VerkoperModel extends Model
         'DatumAangemaakt' => 'datetime',
         'DatumGewijzigd'  => 'datetime',
     ];
+
+    public function sp_CreateVerkoper($naam, $specialeStatus, $verkooptSoort, $standType, $dagen, $logoUrl, $isActief, $opmerking)
+    {
+        // Voeg commentaar toe
+        $row = DB::selectOne(
+            'CALL sp_CreateVerkoper(:Naam, :SpecialeStatus, :VerkooptSoort, :StandType, :Dagen, :LogoUrl, :IsActief, :Opmerking)', 
+            [
+                'Naam'          => $naam,
+                'SpecialeStatus'=> $specialeStatus,
+                'VerkooptSoort' => $verkooptSoort,
+                'StandType'     => $standType,
+                'Dagen'         => $dagen,
+                'LogoUrl'       => $logoUrl,
+                'IsActief'      => $isActief,
+                'Opmerking'     => $opmerking,
+            ]
+        );
+
+        return $row->new_id ?? null; // Return the new ID or null if no row is returned
+    }
 }
