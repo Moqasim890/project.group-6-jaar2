@@ -22,35 +22,6 @@ return new class extends Migration {
             $table->index('Datum');
         });
 
-        DB::table('evenements')->insert([
-            [
-            'Naam' => 'Test Evenement 1',
-            'Datum' => date('Y-m-d', strtotime('+1 month')),
-            'Locatie' => 'Utrecht',
-            'AantalTicketsPerTijdslot' => 100,
-            'BeschikbareStands' => 20,
-            'IsActief' => true,
-            'Opmerking' => null,
-            ],
-            [
-            'Naam' => 'Test Evenement 2',
-            'Datum' => date('Y-m-d', strtotime('+2 months')),
-            'Locatie' => 'Amsterdam',
-            'AantalTicketsPerTijdslot' => 150,
-            'BeschikbareStands' => 25,
-            'IsActief' => true,
-            'Opmerking' => null,
-            ],
-            [
-            'Naam' => 'Test Evenement 3',
-            'Datum' => date('Y-m-d', strtotime('+3 months')),
-            'Locatie' => 'Rotterdam',
-            'AantalTicketsPerTijdslot' => 120,
-            'BeschikbareStands' => 15,
-            'IsActief' => true,
-            'Opmerking' => null,
-            ],
-        ]);
     }
     public function down(): void {
         Schema::dropIfExists('evenements');

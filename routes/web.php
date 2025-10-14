@@ -13,8 +13,11 @@ Route::view('/onderhoud', 'onderhoud')->name('onderhoud');
 Route::get('/', fn() => view('welcome'))->name('home');
 Route::resource('evenements', EvenementController::class);
 Route::resource('stands', StandController::class);
-Route::resource('Tickets', TicketController::class);
+// Route::resource('Tickets', TicketController::class);
+Route::get('Tickets', [TicketController::class, 'index'])->name('Tickets.index');
+Route::get('Tickets/{evenement}', [TicketController::class, 'show'])->name('Tickets.show');
 Route::resource('verkoper', VerkoperController::class);
+Route::get('evenements/{evenement}', [EvenementController::class, 'show'])->name('evenements.show');
 
 
 

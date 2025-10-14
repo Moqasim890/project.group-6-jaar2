@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Evenementmodel extends Model
+class Evenement extends Model
 {
     protected $table = 'evenements';
     protected $fillable = [
@@ -14,6 +14,6 @@ class Evenementmodel extends Model
     public $timestamps = false;
 
     public function stands() {
-        return $this->hasMany(Standmodel::class, 'EvenementId');
+        return $this->hasMany(Stand::class, 'EvenementId');
     }
 }
