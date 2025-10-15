@@ -23,9 +23,11 @@ class VerkoperController extends Controller
      */
     public function index(): View
     {
-        $verkopers = [];// VerkoperModel::all();
+        $verkopers = $this->VerkoperModel->sp_GetAllVerkopers();
 
-        return view('verkoper.index', compact('verkopers'));
+        return view('verkoper.index', [
+            'verkopers' => $verkopers
+        ]);
     }
 
     /**

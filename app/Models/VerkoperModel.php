@@ -39,7 +39,22 @@ class VerkoperModel extends Model
         'DatumGewijzigd'  => 'datetime',
     ];
 
-
+    public function sp_GetAllVerkopers()
+    {
+        // try om code te runnen
+        try 
+        { 
+            $result = DB::select( 'CALL sp_GetAllVerkopers()' );
+            return $result;
+        } catch (\Exception $e) 
+        { 
+            // logt foutmelding in laravel log bestand
+            Log::error('CreateVerkoper failed: ' . $e->getMessage());
+            
+            // return een foutmelding
+            return "Er ging iets fout, probeer later opnieuw"; 
+        } 
+    }
     
     public function sp_CreateVerkoper($naam, $specialeStatus, $verkooptSoort, $standType, $dagen, $logoUrl, $isActief, $opmerking) // <- Parameters
     {   

@@ -16,9 +16,11 @@ Route::resource('evenements', EvenementController::class);
 Route::resource('stands', StandController::class);
 // Route::get('Tickets', [TicketController::class, 'index'])->name('Tickets.index');
 Route::get('Tickets/{evenement}', [TicketController::class, 'show'])->name('Tickets.show');
+Route::get('evenements/{evenement}', [EvenementController::class, 'show'])->name('evenements.show');
+
 Route::resource('verkoper', VerkoperController::class);
 Route::post('/verkoper/create', [VerkoperController::class, 'store'])->name('verkoper.store');
-Route::get('evenements/{evenement}', [EvenementController::class, 'show'])->name('evenements.show');
+
 
 // Admin routes for managing ticket prices (prijzen)
 Route::prefix('admin/prijzen')->name('admin.prijzen.')->group(function () {
