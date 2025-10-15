@@ -3,11 +3,84 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class TicketModel extends Model
 {
-    //
-    protected $table = 'tickets';
-    protected $primaryKey = 'id';
-    public $timestamps = true;
+        public static function getAllEvents()
+    {
+        return DB::select('CALL SP_GetAllEvents()');
+    }
+
+    public static function getEventById($id)
+    {
+        return DB::selectOne('CALL SP_GetEventByID(?)', [$id]);
+    }
+
+    public static function getTicketById($id)
+    {
+        return DB::selectOne('CALL SP_GetTicketByID(?)', [$id]);
+    }
+
+    public static function createTicket($data)
+    {
+        try {
+            return DB::select('CALL SP_CreateTicket(?, ?, ?, ?)', [
+                $data['evenement_id'],
+                $data['tarief'],
+                $data['tijdslot'],
+                $data['datum']
+            ]);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Error creating ticket: ' . $e->getMessage(), [
+                'data' => $data
+            ]);
+            throw $e;
+        }
+    }
+
+    public static function getTicketsByEventId($eventId)
+    {
+        try {
+            $tickets = DB::select('CALL SP_GetTicketsByEventId(?)', [$eventId]);
+            $grouped = [];
+            foreach ($tickets as $ticket) {
+                $datum = $ticket->Datum ?? '';
+                if ($datum) {
+                    $grouped[$datum][] = $ticket;
+                }
+            }
+            return $grouped;
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Error getting tickets by event: ' . $e->getMessage(), [
+                'eventId' => $eventId
+            ]);
+            throw $e;
+        }
+    }
+
+    public static function updateTicket($id, $data)
+    {
+        try {
+            return DB::select('CALL SP_UpdateTicket(?, ?, ?, ?, ?)', [
+                $id,
+                $data['tarief'],
+                $data['tijdslot'],
+                $data['datum'],
+                $data['evenement_id']
+            ]);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Error updating ticket: ' . $e->getMessage(), [
+                'id' => $id,
+                'data' => $data
+            ]);
+            throw $e;
+        }
+    }
+
+    public static function deleteTicket($id)
+    {
+        return DB::select('CALL SP_DeleteTicket(?)', [$id]);
+    }
+
 }
