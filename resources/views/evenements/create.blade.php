@@ -1,63 +1,81 @@
 <x-layout>
-  <div class="mx-auto max-w-3xl p-6">
-    <h1 class="mb-6 text-2xl font-semibold">Nieuw evenement</h1>
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-7">
+        <div class="card shadow-sm border-2 border-pink-200 rounded-3xl">
+          <div class="card-body">
+            <h1 class="mb-4 h4 fw-bold text-pink-700">Nieuw evenement aanmaken</h1>
 
-    <form method="POST" action="{{ route('evenements.store') }}" class="space-y-5">
-      @csrf
+            {{-- Succesmelding --}}
+            @if(session('ok'))
+              <div class="alert alert-success">{{ session('ok') }}</div>
+            @endif
 
-      <div>
-        <label class="mb-1 block text-sm font-medium">Naam</label>
-        <input name="Naam" value="{{ old('Naam') }}" required
-               class="w-full rounded-lg border px-3 py-2" />
-        @error('Naam') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-      </div>
+            {{-- Foutmeldingen --}}
+            @if($errors->any())
+              <div class="alert alert-danger">
+                <ul class="mb-0">
+                  @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                  @endforeach
+                </ul>
+              </div>
+            @endif
 
-      <div class="grid gap-5 sm:grid-cols-2">
-        <div>
-          <label class="mb-1 block text-sm font-medium">Datum</label>
-          <input type="date" name="Datum" value="{{ old('Datum') }}" required
-                 class="w-full rounded-lg border px-3 py-2" />
-          @error('Datum') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+            <form method="POST" action="{{ route('evenements.store') }}">
+              @csrf
+
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Naam evenement</label>
+                <input name="Naam" value="{{ old('Naam') }}" required class="form-control rounded-2xl border-pink-300" placeholder="Bijvoorbeeld Sneakerness Rotterdam" />
+                @error('Naam') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
+              </div>
+
+              <div class="row mb-3">
+                <div class="col-sm-6">
+                  <label class="form-label fw-semibold">Datum</label>
+                  <input type="date" name="Datum" value="{{ old('Datum') }}" required class="form-control rounded-2xl border-pink-300" />
+                  @error('Datum') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
+                </div>
+                <div class="col-sm-6">
+                  <label class="form-label fw-semibold">Locatie</label>
+                  <input name="Locatie" value="{{ old('Locatie') }}" required class="form-control rounded-2xl border-pink-300" placeholder="Bijvoorbeeld Rotterdam" />
+                  @error('Locatie') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <div class="col-sm-6">
+                  <label class="form-label fw-semibold">Tickets per tijdslot</label>
+                  <input type="number" min="0" name="AantalTicketsPerTijdslot" value="{{ old('AantalTicketsPerTijdslot') }}" required class="form-control rounded-2xl border-pink-300" placeholder="Aantal tickets" />
+                  @error('AantalTicketsPerTijdslot') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
+                </div>
+                <div class="col-sm-6">
+                  <label class="form-label fw-semibold">Beschikbare stands</label>
+                  <input type="number" min="0" name="BeschikbareStands" value="{{ old('BeschikbareStands') }}" required class="form-control rounded-2xl border-pink-300" placeholder="Aantal stands" />
+                  @error('BeschikbareStands') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
+                </div>
+              </div>
+
+              <div class="form-check mb-3">
+                <input id="IsActief" type="checkbox" name="IsActief" value="1" {{ old('IsActief',1) ? 'checked' : '' }} class="form-check-input" />
+                <label for="IsActief" class="form-check-label fw-semibold">Actief</label>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Opmerking</label>
+                <textarea name="Opmerking" rows="3" class="form-control rounded-2xl border-pink-300" placeholder="Extra informatie">{{ old('Opmerking') }}</textarea>
+                @error('Opmerking') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
+              </div>
+
+              <div class="d-flex gap-2 mt-4">
+                <a href="{{ route('evenements.index') }}" class="btn btn-outline-secondary rounded-2xl px-4">Annuleren</a>
+                <button class="btn btn-pink fw-semibold rounded-2xl px-4" style="background-color:#ec4899; color:white;">Opslaan</button>
+              </div>
+            </form>
+          </div>
         </div>
-        <div>
-          <label class="mb-1 block text-sm font-medium">Locatie</label>
-          <input name="Locatie" value="{{ old('Locatie') }}" required
-                 class="w-full rounded-lg border px-3 py-2" />
-          @error('Locatie') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-        </div>
       </div>
-
-      <div class="grid gap-5 sm:grid-cols-2">
-        <div>
-          <label class="mb-1 block text-sm font-medium">Tickets per tijdslot</label>
-          <input type="number" min="0" name="AantalTicketsPerTijdslot" value="{{ old('AantalTicketsPerTijdslot') }}" required
-                 class="w-full rounded-lg border px-3 py-2" />
-          @error('AantalTicketsPerTijdslot') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-        </div>
-        <div>
-          <label class="mb-1 block text-sm font-medium">Beschikbare stands</label>
-          <input type="number" min="0" name="BeschikbareStands" value="{{ old('BeschikbareStands') }}" required
-                 class="w-full rounded-lg border px-3 py-2" />
-          @error('BeschikbareStands') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-        </div>
-      </div>
-
-      <div class="flex items-center gap-3">
-        <input id="IsActief" type="checkbox" name="IsActief" value="1" {{ old('IsActief',1) ? 'checked' : '' }}
-               class="h-4 w-4 rounded border" />
-        <label for="IsActief" class="text-sm">Actief</label>
-      </div>
-
-      <div>
-        <label class="mb-1 block text-sm font-medium">Opmerking</label>
-        <textarea name="Opmerking" rows="3" class="w-full rounded-lg border px-3 py-2">{{ old('Opmerking') }}</textarea>
-        @error('Opmerking') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-      </div>
-
-      <div class="flex items-center gap-3">
-        <a href="{{ route('evenements.index') }}" class="rounded-lg border px-4 py-2 text-sm hover:bg-gray-50">Annuleer</a>
-        <button class="rounded-lg bg-gray-900 px-4 py-2 text-sm font-semibold text-white hover:opacity-95">Opslaan</button>
-      </div>
-    </form>
+    </div>
   </div>
 </x-layout>

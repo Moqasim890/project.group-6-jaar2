@@ -22,6 +22,8 @@ return new class extends Migration {
             $table->index('EvenementId');
             // $table->check('AantalTickets > 0');
         });
+        // Optional: Add some initial data if needed
+        
     }
     public function down(): void {
         Schema::dropIfExists('tickets');
