@@ -52,6 +52,11 @@
                     <label for="InputLogoUrl" class="form-label text-white">Logo URL</label>
                     <input name="LogoUrl" type="text" id="InputLogoUrl">
                 </div>
+                <div>
+                    @error('Naam')
+                        <p class="text-danger">{{ $message }}</p>
+                    @enderror
+                </div>
                 <button type="submit" class="btn btn-primary mt-4 w-100">Verzend</button>
             </form>
         </div>
