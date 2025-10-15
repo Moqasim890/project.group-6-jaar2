@@ -29,36 +29,58 @@ class TicketModel extends Model
 
     public static function createTicket($data)
     {
-        // Accept multiple possible keys from different form implementations
-        $eventId = $data['EvenementId'] ?? $data['event_id'] ?? $data['id'] ?? $data['Event'] ?? null;
-        $tarief = $data['Tarief'] ?? $data['prijs'] ?? $data['price'] ?? null;
-        $tijdslot = $data['Tijdslot'] ?? $data['tijdslot'] ?? null;
-        $datum = $data['Datum'] ?? $data['datum'] ?? null;
-
-        return DB::select('CALL SP_CreateTicket(?, ?, ?, ?)', [$eventId, $tarief, $tijdslot, $datum]);
+        try {
+            return DB::select('CALL SP_CreateTicket(?, ?, ?, ?)', [
+                $data['evenement_id'],
+                $data['tarief'],
+                $data['tijdslot'],
+                $data['datum']
+            ]);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Error creating ticket: ' . $e->getMessage(), [
+                'data' => $data
+            ]);
+            throw $e;
+        }
     }
 
     public static function getTicketsByEventId($eventId)
     {
-        $tickets = DB::select('CALL SP_GetTicketsByEventId(?)', [$eventId]);
-        $grouped = [];
-        foreach ($tickets as $ticket) {
-            $date = $ticket->Datum ?? $ticket->datum ?? null;
-            if ($date) {
-                $grouped[$date][] = $ticket;
+        try {
+            $tickets = DB::select('CALL SP_GetTicketsByEventId(?)', [$eventId]);
+            $grouped = [];
+            foreach ($tickets as $ticket) {
+                $datum = $ticket->Datum ?? '';
+                if ($datum) {
+                    $grouped[$datum][] = $ticket;
+                }
             }
+            return $grouped;
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Error getting tickets by event: ' . $e->getMessage(), [
+                'eventId' => $eventId
+            ]);
+            throw $e;
         }
-        return $grouped;
     }
 
     public static function updateTicket($id, $data)
     {
-        $tarief = $data['Tarief'] ?? $data['prijs'] ?? $data['price'] ?? null;
-        $tijdslot = $data['Tijdslot'] ?? $data['tijdslot'] ?? null;
-        $datum = $data['Datum'] ?? $data['datum'] ?? null;
-        $eventId = $data['EvenementId'] ?? $data['event_id'] ?? null;
-
-        return DB::select('CALL SP_UpdateTicket(?, ?, ?, ?, ?)', [$id, $tarief, $tijdslot, $datum, $eventId]);
+        try {
+            return DB::select('CALL SP_UpdateTicket(?, ?, ?, ?, ?)', [
+                $id,
+                $data['tarief'],
+                $data['tijdslot'],
+                $data['datum'],
+                $data['evenement_id']
+            ]);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Error updating ticket: ' . $e->getMessage(), [
+                'id' => $id,
+                'data' => $data
+            ]);
+            throw $e;
+        }
     }
 
     public static function deleteTicket($id)

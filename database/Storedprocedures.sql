@@ -14,6 +14,12 @@ DROP PROCEDURE IF EXISTS SP_GetEventByID $$
 DROP PROCEDURE IF EXISTS SP_GetAllTickets_NoParam $$
 DROP PROCEDURE IF EXISTS SP_KopenTicket $$
 DROP PROCEDURE IF EXISTS SP_Ticketophalen $$
+DROP PROCEDURE IF EXISTS SP_CreatePrijs $$
+DROP PROCEDURE IF EXISTS SP_UpdatePrijs $$
+DROP PROCEDURE IF EXISTS SP_DeletePrijs $$
+DROP PROCEDURE IF EXISTS SP_GetAllPrijzen $$
+DROP PROCEDURE IF EXISTS SP_GetPrijsByID $$
+DROP PROCEDURE IF EXISTS SP_CreateOrGetBezoeker $$
 
 CREATE PROCEDURE SP_KopenTicket(IN bezoekerid INT, IN evenementid INT, IN prijsid INT, IN aantalTickets INT, IN datum date)
 BEGIN
@@ -30,10 +36,151 @@ BEGIN
         PrijsId,
         AantalTickets,
         Datum
-    FROM Tickets
+    FROM tickets
     WHERE
-        Datum = datum && 
+        Datum = datum &&
         Bezoekerid = bezoekerid;
+END $$
+
+-- Admin CRUD for Prijzen
+CREATE PROCEDURE SP_CreatePrijs(
+    IN p_evenementId INT,
+    IN p_datum DATE,
+    IN p_tijdslot TIME,
+    IN p_tarief DECIMAL(10,2),
+    IN p_opmerking TEXT
+)
+BEGIN
+    DECLARE v_duplicate_count INT;
+
+    -- Check if duplicate exists (same event, date, and timeslot)
+    SELECT COUNT(*) INTO v_duplicate_count
+    FROM prijzen
+    WHERE EvenementId = p_evenementId
+      AND Datum = p_datum
+      AND Tijdslot = p_tijdslot
+      AND IsActief = 1;
+
+    -- If duplicate exists, signal error
+    IF v_duplicate_count > 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Er bestaat al een prijs voor dit evenement op deze datum en dit tijdslot.';
+    END IF;
+
+    -- Insert new prijs
+    INSERT INTO prijzen (EvenementId, Datum, Tijdslot, Tarief, IsActief, Opmerking)
+    VALUES (p_evenementId, p_datum, p_tijdslot, p_tarief, 1, p_opmerking);
+
+    SELECT LAST_INSERT_ID() AS id;
+END $$
+
+CREATE PROCEDURE SP_UpdatePrijs(
+    IN p_id INT,
+    IN p_evenementId INT,
+    IN p_datum DATE,
+    IN p_tijdslot TIME,
+    IN p_tarief DECIMAL(10,2),
+    IN p_isActief TINYINT,
+    IN p_opmerking TEXT
+)
+BEGIN
+    DECLARE v_duplicate_count INT;
+
+    -- Check if duplicate exists (excluding current record)
+    SELECT COUNT(*) INTO v_duplicate_count
+    FROM prijzen
+    WHERE EvenementId = p_evenementId
+      AND Datum = p_datum
+      AND Tijdslot = p_tijdslot
+      AND IsActief = 1
+      AND id != p_id;
+
+    -- If duplicate exists, signal error
+    IF v_duplicate_count > 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Er bestaat al een prijs voor dit evenement op deze datum en dit tijdslot.';
+    END IF;
+
+    -- Update prijs
+    UPDATE prijzen
+    SET
+        EvenementId = p_evenementId,
+        Datum = p_datum,
+        Tijdslot = p_tijdslot,
+        Tarief = p_tarief,
+        IsActief = p_isActief,
+        Opmerking = p_opmerking,
+        DatumGewijzigd = NOW()
+    WHERE id = p_id;
+
+    SELECT ROW_COUNT() AS Affected;
+END $$
+
+CREATE PROCEDURE SP_DeletePrijs(IN p_id INT)
+BEGIN
+    DELETE FROM prijzen WHERE id = p_id;
+    SELECT ROW_COUNT() AS Affected;
+END $$
+
+CREATE PROCEDURE SP_GetAllPrijzen()
+BEGIN
+    SELECT
+        p.id,
+        p.EvenementId,
+        e.Naam AS EventNaam,
+        p.Datum,
+        p.Tijdslot,
+        p.Tarief,
+        p.IsActief,
+        p.Opmerking,
+        p.DatumAangemaakt,
+        p.DatumGewijzigd
+    FROM prijzen AS p
+    LEFT JOIN evenements AS e ON p.EvenementId = e.id
+    ORDER BY p.Datum DESC, p.Tijdslot;
+END $$
+
+CREATE PROCEDURE SP_GetPrijsByID(IN p_id INT)
+BEGIN
+    SELECT
+        p.id,
+        p.EvenementId,
+        e.Naam AS EventNaam,
+        p.Datum,
+        p.Tijdslot,
+        p.Tarief,
+        p.IsActief,
+        p.Opmerking,
+        p.DatumAangemaakt,
+        p.DatumGewijzigd
+    FROM prijzen AS p
+    LEFT JOIN evenements AS e ON p.EvenementId = e.id
+    WHERE p.id = p_id;
+END $$
+
+-- Create or get existing bezoeker by email
+CREATE PROCEDURE SP_CreateOrGetBezoeker(
+    IN p_email VARCHAR(255),
+    IN p_naam VARCHAR(255)
+)
+BEGIN
+    DECLARE v_bezoeker_id INT;
+
+    -- Check if bezoeker exists (using COLLATE to fix collation mismatch)
+    SELECT id INTO v_bezoeker_id
+    FROM bezoekers
+    WHERE EmailAdres COLLATE utf8mb4_unicode_ci = p_email COLLATE utf8mb4_unicode_ci
+    LIMIT 1;
+
+    -- If not exists, create new bezoeker
+    IF v_bezoeker_id IS NULL THEN
+        INSERT INTO bezoekers (Naam, EmailAdres, IsActief)
+        VALUES (p_naam, p_email, 1);
+
+        SET v_bezoeker_id = LAST_INSERT_ID();
+    END IF;
+
+    SELECT v_bezoeker_id AS id, p_email AS EmailAdres;
 END $$
 
 
