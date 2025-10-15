@@ -44,17 +44,5 @@ class EvenementModel extends Model
             throw $e;
         }
     }
-
-    // Static method to get event by ID using stored procedure
-    public static function getEventById($id)
-    {
-        try {
-            $results = DB::select('CALL SP_GetEventByID(?)', [$id]);
-            return !empty($results) ? $results[0] : null;
-        } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Error getting event by ID: ' . $e->getMessage(), ['id' => $id]);
-            throw $e;
-        }
-    }
 }
 

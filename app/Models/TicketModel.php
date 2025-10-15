@@ -12,11 +12,6 @@ class TicketModel extends Model
         return DB::select('CALL SP_GetAllEvents()');
     }
 
-    public static function getAllTickets()
-    {
-        return DB::select('CALL SP_GetAllTickets_NoParam()');
-    }
-
     public static function getEventById($id)
     {
         return DB::selectOne('CALL SP_GetEventByID(?)', [$id]);
@@ -86,11 +81,6 @@ class TicketModel extends Model
     public static function deleteTicket($id)
     {
         return DB::select('CALL SP_DeleteTicket(?)', [$id]);
-    }
-
-//TODO: stored procedure afmaken
-    public static function kopenTicket($data){
-        return DB::select('CALL SP_KopenTicket(?,?,?,?)', $data);
     }
 
 }
