@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 
 class TicketModel extends Model
 {
-    public static function getAllEvents()
+        public static function getAllEvents()
     {
         return DB::select('CALL SP_GetAllEvents()');
     }

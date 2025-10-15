@@ -51,9 +51,6 @@ class TicketController extends Controller
     public function show()
     {
 
-        //alle prijzen die bij de evenement horen
-        $prijzen = PrijsModel::where('EvenementId', $evenement->id)->get()->groupBy('Datum');
-        return view('Tickets.show', compact( 'prijzen', 'evenement'));
     }
 
     /**
