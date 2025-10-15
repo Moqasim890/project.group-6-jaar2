@@ -11,7 +11,7 @@
                 </div>
                 <div class="mb-2 justify-content-center">
                     <label for="InputSpecialeStatus" class="form-label text-white">speciale status</label>
-                    <select name="SpecialeStatus" id="InputSpecialeStatus">
+                    <select name="SpecialeStatus" id="InputSpecialeStatus" required>
                         <option value="">--Kies--</option>
                         <option value="PARTNER">JA</option>
                         <option value="GEEN">NEE</option>
@@ -33,7 +33,7 @@
                 </div>
                 <div class="mb-2 justify-content-center">
                     <label for="InputStandType" class="form-label text-white">Stand Type</label>
-                    <select name="StandType" id="InputStandType" class="form-select">
+                    <select name="StandType" id="InputStandType" class="form-select" required>
                         <option value="">--Kies--</option>
                         <option value="A">A</option>
                         <option value="AA">AA</option>
@@ -42,7 +42,7 @@
                 </div>
                 <div class="mb-2 justify-content-center">
                     <label for="InputDagen" class="form-label text-white">Aantal Dagen</label>
-                    <select name="Dagen" id="InputDagen" class="form-select">
+                    <select name="Dagen" id="InputDagen" class="form-select" required>
                         <option value="">--Kies--</option>
                         <option value="EEN">Eén</option>
                         <option value="TWEE">Twee</option>

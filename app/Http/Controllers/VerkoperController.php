@@ -112,10 +112,10 @@ class VerkoperController extends Controller
     {
         $data = $request->validate([
             'Naam'          => 'required|string|max:200',
-            'SpecialeStatus'=> 'nullable|string',
+            'SpecialeStatus'=> 'required|string',
             'VerkooptSoort' => 'required|string',
-            'StandType'     => 'nullable|string',
-            'Dagen'         => 'nullable|string',
+            'StandType'     => 'required|string',
+            'Dagen'         => 'required|string',
             'LogoUrl'       => 'nullable|string|max:500',
             'IsActief'      => 'nullable|boolean',
             'Opmerking'     => 'nullable|string',
