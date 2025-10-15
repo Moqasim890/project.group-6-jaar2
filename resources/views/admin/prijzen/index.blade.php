@@ -25,30 +25,20 @@
                 <table class="table table-striped">
                     <thead>
                         <tr>
-                            <th>ID</th>
                             <th>Evenement</th>
                             <th>Datum</th>
                             <th>Tijdslot</th>
                             <th>Tarief (€)</th>
-                            <th>Status</th>
                             <th>Acties</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($prijzen as $prijs)
                             <tr>
-                                <td>{{ $prijs->id }}</td>
                                 <td>{{ $prijs->EventNaam }}</td>
                                 <td>{{ date('d-m-Y', strtotime($prijs->Datum)) }}</td>
                                 <td>{{ substr($prijs->Tijdslot, 0, 5) }}</td>
                                 <td>€{{ number_format($prijs->Tarief, 2, ',', '.') }}</td>
-                                <td>
-                                    @if($prijs->IsActief)
-                                        <span class="badge bg-success">Actief</span>
-                                    @else
-                                        <span class="badge bg-secondary">Inactief</span>
-                                    @endif
-                                </td>
                                 <td>
                                     <a href="{{ route('admin.prijzen.edit', $prijs->id) }}" class="btn btn-sm btn-warning">
                                         Bewerken
@@ -67,7 +57,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="text-center">Geen prijzen gevonden.</td>
+                                <td colspan="5" class="text-center">Geen prijzen gevonden.</td>
                             </tr>
                         @endforelse
                     </tbody>

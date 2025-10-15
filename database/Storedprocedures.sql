@@ -118,7 +118,13 @@ END $$
 
 CREATE PROCEDURE SP_DeletePrijs(IN p_id INT)
 BEGIN
-    DELETE FROM prijzen WHERE id = p_id;
+    -- Soft delete: set IsActief to 0 instead of hard delete
+    -- This prevents foreign key constraint errors when tickets reference this prijs
+    UPDATE prijzen 
+    SET IsActief = 0, 
+        DatumGewijzigd = NOW()
+    WHERE id = p_id;
+    
     SELECT ROW_COUNT() AS Affected;
 END $$
 
@@ -137,6 +143,7 @@ BEGIN
         p.DatumGewijzigd
     FROM prijzen AS p
     LEFT JOIN evenements AS e ON p.EvenementId = e.id
+    WHERE p.IsActief = 1
     ORDER BY p.Datum DESC, p.Tijdslot;
 END $$
 
@@ -223,7 +230,8 @@ BEGIN
     LEFT JOIN
         evenements AS e ON p.EvenementId = e.id
     WHERE
-        e.id = eventId;
+        e.id = eventId
+        AND p.IsActief = 1;
 END $$
 
 -- Backwards-compatible: return all prijzen when no eventId is provided
@@ -239,7 +247,9 @@ BEGIN
     FROM
         prijzen AS p
     LEFT JOIN
-        evenements AS e ON p.EvenementId = e.id;
+        evenements AS e ON p.EvenementId = e.id
+    WHERE
+        p.IsActief = 1;
 END $$
 
 CREATE PROCEDURE SP_GetTicketByID (IN ticketId INT)
@@ -257,7 +267,8 @@ BEGIN
     LEFT JOIN
         evenements AS e ON p.EvenementId = e.id
     WHERE
-        p.id = ticketId;
+        p.id = ticketId
+        AND p.IsActief = 1;
 END $$
 
 CREATE PROCEDURE SP_GetTicketsByEventID (IN eventId INT)

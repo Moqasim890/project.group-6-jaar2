@@ -94,7 +94,7 @@ class TicketController extends Controller
     public function showkopen($id)
     {
         $evenement = TicketModel::getEventById($id);
-        $prijzen = TicketModel::getTicketsByEventID($id);
+        $prijzen = TicketModel::getTicketsByEventId($id);
         return view('Tickets.kopen', compact('evenement', 'prijzen'));
     }
 
