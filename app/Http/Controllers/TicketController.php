@@ -211,13 +211,13 @@ class TicketController extends Controller
 
             // Send the actual email
             try {
-                Mail::to($email)->send(new TicketConfirmation(
-                    $naam,
-                    $evenementNaam,
-                    $totalTickets,
-                    $purchasedTickets,
-                    $totalBedrag
-                ));
+                // Mail::to($email)->send(new TicketConfirmation(
+                //     $naam,
+                //     $evenementNaam,
+                //     $totalTickets,
+                //     $purchasedTickets,
+                //     $totalBedrag
+                // ));
 
                 Log::info("Ticket confirmation email sent successfully to: {$email}", [
                     'naam' => $naam,
