@@ -20,6 +20,77 @@ DROP PROCEDURE IF EXISTS SP_DeletePrijs $$
 DROP PROCEDURE IF EXISTS SP_GetAllPrijzen $$
 DROP PROCEDURE IF EXISTS SP_GetPrijsByID $$
 DROP PROCEDURE IF EXISTS SP_CreateOrGetBezoeker $$
+DROP PROCEDURE IF EXISTS sp_GetAllVerkopers $$
+DROP PROCEDURE IF EXISTS sp_GetVerkoperByNaam $$
+DROP PROCEDURE IF EXISTS sp_CreateVerkoper $$
+
+CREATE PROCEDURE sp_GetAllVerkopers()
+BEGIN
+    SELECT
+        v.id,
+        v.Naam,
+        v.SpecialeStatus,
+        v.VerkooptSoort,
+        v.StandType,
+        v.Dagen,
+        v.LogoUrl
+    FROM verkopers AS v;
+END $$
+
+
+CREATE PROCEDURE sp_CreateVerkoper(
+    -- input parameters
+    IN v_name VARCHAR(200),
+    IN v_speciale_status VARCHAR(10),
+    IN v_verkoopt_soort VARCHAR(20),
+    IN v_stand_type VARCHAR(10),
+    IN v_dagen VARCHAR(10),
+    IN v_logo_url VARCHAR(500),
+    IN v_is_actief BIT,
+    IN v_opmerking TEXT
+)
+BEGIN
+    -- insert in verkopers
+    INSERT INTO verkopers (
+        Naam,
+        SpecialeStatus,
+        VerkooptSoort,
+        StandType,
+        Dagen,
+        LogoUrl,
+        IsActief,
+        Opmerking
+    )
+    -- met waarden van input parameters
+    VALUES (
+        v_name,
+        v_speciale_status,
+        v_verkoopt_soort,
+        v_stand_type,
+        v_dagen,
+        v_logo_url,
+        v_is_actief,
+        v_opmerking
+    );
+END$$
+
+-- maakt een nieuwe stored procedure
+CREATE PROCEDURE sp_GetVerkoperByNaam(
+    -- input parameter
+    IN v_naam VARCHAR(200)
+)
+BEGIN
+    -- select
+    SELECT 
+        -- kolom "Naam"
+        VKPR.Naam
+    -- van verkopers afgekort naar VKPR
+    FROM verkopers AS VKPR
+    -- waar kolom "Naam" Gelijk is aan input naam
+    -- utf8mb4_unicode_ci zorgt ervoor dat het niet uitmaakt of het hoofdletters of kleine leters zijn
+    -- dus "TEST" = "test" is TRUE
+    WHERE VKPR.Naam COLLATE utf8mb4_unicode_ci = v_naam COLLATE utf8mb4_unicode_ci;
+END$$
 
 CREATE PROCEDURE SP_KopenTicket(IN bezoekerid INT, IN evenementid INT, IN prijsid INT, IN aantalTickets INT, IN datum date)
 BEGIN
