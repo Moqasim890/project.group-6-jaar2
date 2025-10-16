@@ -2,19 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Standmodel;
-use App\Models\Evenementmodel;
+use App\Models\StandModel;
+use App\Models\EvenementModel;
 use Illuminate\Http\Request;
 
 class StandController extends Controller
 {
     public function index() {
-        $stands = Standmodel::with('evenement')->latest('DatumAangemaakt')->paginate(10);
+        $stands = StandModel::with('evenement')->latest('DatumAangemaakt')->paginate(10);
         return view('stands.index', compact('stands'));
     }
 
     public function create() {
-        $events = Evenementmodel::orderBy('Datum','desc')->get(['id','Naam']);
+        $events = EvenementModel::orderBy('Datum','desc')->get(['id','Naam']);
         return view('stands.create', compact('events'));
     }
 
@@ -28,16 +28,16 @@ class StandController extends Controller
             'IsActief'     => 'boolean',
             'Opmerking'    => 'nullable|string',
         ]);
-        Standmodel::create($data);
+        StandModel::create($data);
         return redirect()->route('stands.index')->with('ok','Stand gemaakt.');
     }
 
-    public function edit(Standmodel $stand) {
-        $events = Evenementmodel::orderBy('Datum','desc')->get(['id','Naam']);
+    public function edit(StandModel $stand) {
+        $events = EvenementModel::orderBy('Datum','desc')->get(['id','Naam']);
         return view('stands.edit', compact('stand','events'));
     }
 
-    public function update(Request $request, Standmodel $stand) {
+    public function update(Request $request, StandModel $stand) {
         $data = $request->validate([
             'EvenementId'  => 'required|exists:evenements,id',
             'VerkoperId'   => 'required|integer',
@@ -51,7 +51,7 @@ class StandController extends Controller
         return redirect()->route('stands.index')->with('ok','Stand bijgewerkt.');
     }
 
-    public function destroy(Standmodel $stand) {
+    public function destroy(StandModel $stand) {
         $stand->delete();
         return back()->with('ok','Stand verwijderd.');
     }

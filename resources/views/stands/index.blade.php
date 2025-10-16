@@ -46,11 +46,11 @@
               </div>
 
               <div class="mt-6 flex justify-end gap-2">
-                <a href="{{ route('stands.edit',$s) }}"
+                <a href="{{ route('stands.edit', $s) }}"
                    class="rounded-lg border border-white/20 bg-white/10 px-3 py-1.5 text-xs text-white hover:bg-white/20">
                   ✏️ Bewerk
                 </a>
-                <form method="POST" action="{{ route('stands.destroy',$s) }}"
+                <form method="POST" action="{{ route('stands.destroy', $s) }}"
                       onsubmit="return confirm('Verwijderen?')">
                   @csrf @method('DELETE')
                   <button

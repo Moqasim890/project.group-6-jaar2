@@ -27,10 +27,13 @@ class AdminController extends Controller
     {
         $validated = $request->validate([
             'evenement_id' => 'required|integer',
-            'datum' => 'required|date',
+            'datum' => 'required|date|after_or_equal:today',
             'tijdslot' => 'required',
-            'tarief' => 'required|numeric|min:0',
+            'tarief' => 'required|numeric|min:0.01',
             'opmerking' => 'nullable|string'
+        ], [
+            'datum.after_or_equal' => 'De datum mag niet in het verleden liggen.',
+            'tarief.min' => 'Het tarief moet minimaal €0.01 zijn.'
         ]);
 
         // Check for duplicates before calling stored procedure
@@ -90,11 +93,14 @@ class AdminController extends Controller
     {
         $validated = $request->validate([
             'evenement_id' => 'required|integer',
-            'datum' => 'required|date',
+            'datum' => 'required|date|after_or_equal:today',
             'tijdslot' => 'required',
-            'tarief' => 'required|numeric|min:0',
+            'tarief' => 'required|numeric|min:0.01',
             'is_actief' => 'required|boolean',
             'opmerking' => 'nullable|string'
+        ], [
+            'datum.after_or_equal' => 'De datum mag niet in het verleden liggen.',
+            'tarief.min' => 'Het tarief moet minimaal €0.01 zijn.'
         ]);
 
         // Check for duplicates (excluding current record)

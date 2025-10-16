@@ -45,13 +45,7 @@
                             <li class="nav-item">
                                 <a class="nav-link {{ request()->is('admin*') ? 'active' : '' }}"
                                     href="{{ route('admin.prijzen.index') }}">
-                                    tickets beheren
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link {{ request()->is('verkoper*') ? 'active' : '' }}"
-                                    href="{{ route('verkoper.index') }}">
-                                    contactpersoon
+                                    Tickets Beheren
                                 </a>
                             </li>
                             <li class="nav-item">
@@ -96,50 +90,6 @@
                                     Privacy
                                 </a>
                             </li>
-
-        <div class="offcanvas-body">
-          <ul class="navbar-nav ms-auto">
-            <li class="nav-item">
-              <a class="nav-link {{ request()->is('verkoper*') ? 'active' : '' }}" href="{{ route('verkoper.index') }}">
-                contactpersoon
-              </a>
-             <li class="nav-item">
-              <a class="nav-link {{ request()->is('verkoper*') ? 'active' : '' }}" href="{{ route('verkoper.index') }}">
-                Verkoper
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link {{ request()->is('tickets*') ? 'active' : '' }}" href="{{ route('Tickets.index') }}">
-                Tickets
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link {{ request()->routeIs('evenements.*') ? 'active' : '' }}" href="{{ route('evenements.index') }}">
-                Events
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link {{ request()->is('stands*') ? 'active' : '' }}" href="{{ url('/stands') }}">
-                Stands
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link {{ request()->is('info') ? 'active' : '' }}" href="{{ url('/info') }}">
-                Info
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link {{ request()->is('contact') ? 'active' : '' }}" href="{{ url('/contact') }}">
-                Contact
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link {{ request()->is('privacy') ? 'active' : '' }}" href="{{ url('/privacy') }}">
-                Privacy
-              </a>
-            </li>
-
-
                         </ul>
                     </div>
                 </div> {{-- /offcanvas --}}

@@ -1,13 +1,4 @@
-<!DOCTYPE html>
-<html lang="nl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Prijs Bewerken</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
-</head>
-<body>
+<x-layout>
     <div class="container mt-5">
         <div class="row mb-4">
             <div class="col">
@@ -15,7 +6,7 @@
             </div>
             <div class="col text-end">
                 <a href="{{ route('admin.prijzen.index') }}" class="btn btn-secondary">
-                    Terug naar Overzicht
+                    <i class="bi bi-arrow-left me-1"></i> Terug naar Overzicht
                 </a>
             </div>
         </div>
@@ -44,8 +35,11 @@
 
                     <div class="mb-3">
                         <label for="datum" class="form-label">Datum *</label>
-                        <input type="date" name="datum" id="datum" class="form-control @error('datum') is-invalid @enderror"
-                            value="{{ old('datum', $prijs->Datum) }}" required>
+                        <input type="date" name="datum" id="datum"
+                               class="form-control @error('datum') is-invalid @enderror"
+                               value="{{ old('datum', $prijs->Datum) }}"
+                               min="{{ date('Y-m-d') }}"
+                               required>
                         @error('datum')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -66,8 +60,12 @@
 
                     <div class="mb-3">
                         <label for="tarief" class="form-label">Tarief (€) *</label>
-                        <input type="number" name="tarief" id="tarief" class="form-control @error('tarief') is-invalid @enderror"
-                            value="{{ old('tarief', $prijs->Tarief) }}" step="0.01" min="0" required>
+                        <input type="number" name="tarief" id="tarief"
+                               class="form-control @error('tarief') is-invalid @enderror"
+                               value="{{ old('tarief', $prijs->Tarief) }}"
+                               step="0.01"
+                               min="0.01"
+                               required>
                         @error('tarief')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -93,7 +91,9 @@
                     </div>
 
                     <div class="d-flex justify-content-between">
-                        <button type="submit" class="btn btn-primary">Opslaan</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save me-1"></i> Opslaan
+                        </button>
                         <a href="{{ route('admin.prijzen.index') }}" class="btn btn-secondary">Annuleren</a>
                     </div>
                 </form>
@@ -120,7 +120,7 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    @push('scripts')
     <script>
         // Show error modal if there's a tijdslot error (duplicate)
         @error('tijdslot')
@@ -130,5 +130,5 @@
             });
         @enderror
     </script>
-</body>
-</html>
+    @endpush
+</x-layout>

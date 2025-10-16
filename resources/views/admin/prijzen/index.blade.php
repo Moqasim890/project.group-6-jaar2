@@ -1,13 +1,4 @@
-<!DOCTYPE html>
-<html lang="nl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Prijzen Beheer</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
-</head>
-<body>
+<x-layout>
     <div class="container mt-5">
         <div class="row mb-4">
             <div class="col">
@@ -15,7 +6,7 @@
             </div>
             <div class="col text-end">
                 <a href="{{ route('admin.prijzen.create') }}" class="btn btn-primary">
-                    Nieuwe Prijs Toevoegen
+                    <i class="bi bi-plus-circle me-1"></i> Nieuwe Prijs Toevoegen
                 </a>
             </div>
         </div>
@@ -41,7 +32,7 @@
                                 <td>€{{ number_format($prijs->Tarief, 2, ',', '.') }}</td>
                                 <td>
                                     <a href="{{ route('admin.prijzen.edit', $prijs->id) }}" class="btn btn-sm btn-warning">
-                                        Bewerken
+                                        <i class="bi bi-pencil"></i> Bewerken
                                     </a>
                                     <form action="{{ route('admin.prijzen.destroy', $prijs->id) }}"
                                           method="POST"
@@ -50,7 +41,7 @@
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-danger">
-                                            Verwijderen
+                                            <i class="bi bi-trash"></i> Verwijderen
                                         </button>
                                     </form>
                                 </td>
@@ -102,7 +93,7 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Show success modal if there's a success message
@@ -118,5 +109,5 @@
             @endif
         });
     </script>
-</body>
-</html>
+    @endpush
+</x-layout>
