@@ -57,10 +57,8 @@
                 </div>
               </div>
 
-              <div class="form-check mb-3">
-                <input id="IsActief" type="checkbox" name="IsActief" value="1" {{ old('IsActief',1) ? 'checked' : '' }} class="form-check-input" />
-                <label for="IsActief" class="form-check-label fw-semibold">Actief</label>
-              </div>
+              {{-- Hidden field: IsActief altijd 1 --}}
+              <input type="hidden" name="IsActief" value="1" />
 
               <div class="mb-3">
                 <label class="form-label fw-semibold">Opmerking</label>

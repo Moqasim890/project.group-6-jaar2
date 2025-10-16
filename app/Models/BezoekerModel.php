@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class BezoekerModel extends Model
 {
@@ -31,12 +32,22 @@ class BezoekerModel extends Model
     public static function createOrGetBezoeker($email, $naam = '')
     {
         try {
-            $results = DB::select('CALL SP_CreateOrGetBezoeker(?, ?)', [$email, $naam]);
-            return !empty($results) ? $results[0] : null;
-        } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Error creating or getting bezoeker: ' . $e->getMessage(), [
+            Log::info('Calling SP_CreateOrGetBezoeker', [
                 'email' => $email,
                 'naam' => $naam
+            ]);
+            $results = DB::select('CALL SP_CreateOrGetBezoeker(?, ?)', [$email, $naam]);
+            $result = !empty($results) ? $results[0] : null;
+            Log::info('SP_CreateOrGetBezoeker completed', [
+                'email' => $email,
+                'bezoekerId' => $result->id ?? null
+            ]);
+            return $result;
+        } catch (\Exception $e) {
+            Log::error('Error in SP_CreateOrGetBezoeker: ' . $e->getMessage(), [
+                'email' => $email,
+                'naam' => $naam,
+                'exception' => $e
             ]);
             throw $e;
         }

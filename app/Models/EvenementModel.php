@@ -41,9 +41,14 @@ class Evenementmodel extends Model
     public static function getAllEvents()
     {
         try {
-            return DB::select('CALL SP_GetAllEvents()');
+            Log::info('Calling SP_GetAllEvents');
+            $result = DB::select('CALL SP_GetAllEvents()');
+            Log::info('SP_GetAllEvents completed', ['count' => count($result)]);
+            return $result;
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Error getting all events: ' . $e->getMessage());
+            Log::error('Error in SP_GetAllEvents: ' . $e->getMessage(), [
+                'exception' => $e
+            ]);
             throw $e;
         }
     }
@@ -52,10 +57,16 @@ class Evenementmodel extends Model
     public static function getEventById($id)
     {
         try {
+            Log::info('Calling SP_GetEventByID', ['id' => $id]);
             $results = DB::select('CALL SP_GetEventByID(?)', [$id]);
-            return !empty($results) ? $results[0] : null;
+            $result = !empty($results) ? $results[0] : null;
+            Log::info('SP_GetEventByID completed', ['id' => $id, 'found' => !empty($result)]);
+            return $result;
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Error getting event by ID: ' . $e->getMessage(), ['id' => $id]);
+            Log::error('Error in SP_GetEventByID: ' . $e->getMessage(), [
+                'id' => $id,
+                'exception' => $e
+            ]);
             throw $e;
         }
     }
