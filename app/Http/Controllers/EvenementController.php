@@ -2,15 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Evenement;
-use App\Models\Evenementmodel;
+use App\Models\EvenementModel; // <-- fix class name
 use Illuminate\Http\Request;
 
 class EvenementController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Evenementmodel::query();
+        $query = EvenementModel::query(); // <-- fix class name
 
         if ($request->filled('q')) {
             $search = $request->input('q');
@@ -41,16 +40,16 @@ class EvenementController extends Controller
             'IsActief' => 'boolean',
             'Opmerking' => 'nullable|string',
         ]);
-        Evenementmodel::create($data);
+        EvenementModel::create($data); // <-- fix class name
         return redirect()->route('evenements.index')->with('ok', 'Evenement succesvol aangemaakt.');
     }
 
-    public function edit(Evenementmodel $evenement)
+    public function edit(EvenementModel $evenement) // <-- fix typehint
     {
         return view('evenements.edit', compact('evenement'));
     }
 
-    public function update(Request $request, Evenementmodel $evenement)
+    public function update(Request $request, EvenementModel $evenement) // <-- fix typehint
     {
         $data = $request->validate([
             'Naam' => 'required|string|max:200',
@@ -70,7 +69,7 @@ class EvenementController extends Controller
         return view('evenements.show', compact('evenement'));
     }
 
-    // try catch 
+    // try catch
     public function destroy(Evenementmodel $evenement)
     {
         try {

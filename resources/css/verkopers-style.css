@@ -41,6 +41,67 @@ table {
     text-align: left;
 }
 
+#add-verkoper {
+    background-color: #97CAA8;
+    border: solid 2px #024800;
+    color: white;
+    text-decoration: none;
+}
+
+.form-toevoegen-verkoper {
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.18);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    width: 500px;
+    height: 500px;
+}
+
+.form-toevoegen-verkoper input, select {
+    border-radius: 5px;
+    background-color: white;
+    height: 40px;
+    width: 100%;
+}
+
+label:has(+ input:required)::after {
+    content: '*' / 'Verplicht';
+    color: red;
+}
+
+label:has(+ select:required)::after {
+    content: '*' / 'Verplicht';
+    color: red;
+}
+
+label:has(+ input:optional)::after {
+    content: '(Optioneel)';
+    margin-left: 0.25rem;
+    
+}
+
+
+.form-toevoegen-verkoper input:hover {
+    border: black 3px solid;
+}
+
+.form-toevoegen-verkoper button {
+    background-color: rgb(0, 0, 0);
+    color: rgb(255, 255, 255);
+    font-weight: bold;
+    border: white 1px solid;
+    border-radius: 10px;
+    width: 50%;
+    height:40px;
+}
+
+.form-toevoegen-verkoper button:hover {
+    background-color: rgb(255, 255, 255);
+    color: rgb(0, 0, 0);
+    font-weight: bold;
+    border: black 3px solid;
+}
+
 @media (max-width: 768px) {
     .page-titel {
         text-align: center;
