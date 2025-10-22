@@ -23,6 +23,32 @@ DROP PROCEDURE IF EXISTS SP_CreateOrGetBezoeker $$
 DROP PROCEDURE IF EXISTS sp_GetAllVerkopers $$
 DROP PROCEDURE IF EXISTS sp_GetVerkoperByNaam $$
 DROP PROCEDURE IF EXISTS sp_CreateVerkoper $$
+DROP PROCEDURE IF EXISTS sp_UpdateVerkoper $$
+
+CREATE PROCEDURE sp_UpdateVerkoper(
+    IN v_id               INT,
+    IN v_Naam             VARCHAR(100),
+    IN v_SpecialeStatus   VARCHAR(10),
+    IN v_VerkooptSoort    VARCHAR(100),
+    IN v_StandType        VARCHAR(10),
+    IN v_Dagen            VARCHAR(20),
+    IN v_LogoUrl          VARCHAR(255)
+)
+BEGIN
+    UPDATE verkopers
+        SET
+            Naam = v_Naam,
+            SpecialeStatus = v_SpecialeStatus,
+            VerkooptSoort = v_VerkooptSoort,
+            StandType = v_StandType,
+            Dagen = v_Dagen,
+            LogoUrl = v_LogoUrl,
+            DatumGewijzigd = NOW()
+    WHERE id = p_id;
+
+    SELECT ROW_COUNT() AS Affected;
+END $$
+    
 
 CREATE PROCEDURE sp_GetAllVerkopers()
 BEGIN
