@@ -32,7 +32,7 @@ CREATE PROCEDURE sp_UpdateVerkoper(
     IN v_VerkooptSoort    VARCHAR(100),
     IN v_StandType        VARCHAR(10),
     IN v_Dagen            VARCHAR(20),
-    IN v_LogoUrl          VARCHAR(255)
+    IN v_LogoUrl          VARCHAR(500)
 )
 BEGIN
     UPDATE verkopers
@@ -42,11 +42,8 @@ BEGIN
             VerkooptSoort = v_VerkooptSoort,
             StandType = v_StandType,
             Dagen = v_Dagen,
-            LogoUrl = v_LogoUrl,
-            DatumGewijzigd = NOW()
-    WHERE id = p_id;
-
-    SELECT ROW_COUNT() AS Affected;
+            LogoUrl = v_LogoUrl
+    WHERE id = v_id;
 END $$
     
 

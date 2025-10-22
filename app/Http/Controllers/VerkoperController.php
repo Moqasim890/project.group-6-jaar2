@@ -72,7 +72,7 @@ class VerkoperController extends Controller
                             // met inputs zodat niet alles opnieuw ingevuld hoeft te worden
                              ->withInput()
                             // met errors met als Key Naam en Value ...
-                             ->withErrors(['Naam' => 'Deze naam bestaat al.']);
+                             ->withErrors(['Naam' => 'Deze naam bestaat am l.']);
         }
 
         // roep stored procedure aan in model en geef data mee
@@ -116,20 +116,19 @@ class VerkoperController extends Controller
     /**
      * Update een verkoper.
      */
-    public function update(Request $request, VerkoperModel $verkoper): RedirectResponse
+    public function update(Request $request, $id)
     {
         $data = $request->validate([
+            'id'            => 'required|integer',
             'Naam'          => 'required|string|max:200',
             'SpecialeStatus'=> 'required|string',
             'VerkooptSoort' => 'required|string',
             'StandType'     => 'required|string',
             'Dagen'         => 'required|string',
             'LogoUrl'       => 'nullable|string|max:500',
-            'IsActief'      => 'nullable|boolean',
-            'Opmerking'     => 'nullable|string',
         ]);
 
-        $verkoper->update($data);
+        $this->VerkoperModel->sp_UpdateVerkoper($id, $data);
 
         return redirect()->route('verkoper.index')->with('success', 'Verkoper bijgewerkt!');
     }

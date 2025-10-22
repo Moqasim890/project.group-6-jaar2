@@ -135,5 +135,34 @@ class VerkoperModel extends Model
             return "Er ging iets fout, probeer later opnieuw"; 
         } 
     }
+
+    public function sp_UpdateVerkoper($id, $data) // <- Parameters
+    {   
+        // try om code te runnen
+        try 
+        { 
+            // DB = class
+            // selectOne = function binnen class DB
+            // selectOne gebruiken omdat ik maar een row verwacht als resultaat
+            return DB::select('CALL sp_UpdateVerkoper(?, ?, ?, ?, ?, ?, ?)', [
+                $id,
+                $data['Naam'],
+                $data['SpecialeStatus'],
+                $data['VerkooptSoort'],
+                $data['StandType'],
+                $data['Dagen'],
+                $data['LogoUrl'] ?? null
+            ]);
+
+        // als try is gefailed catch error en logt het
+        } catch (\Exception $e) 
+        { 
+            // logt foutmelding in laravel log bestand
+            Log::error('CreateVerkoper failed: ' . $e->getMessage());
+            
+            // return een foutmelding
+            return "Er ging iets fout, probeer later opnieuw"; 
+        } 
+    } 
 }
 

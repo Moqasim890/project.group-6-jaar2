@@ -3,8 +3,10 @@
     <div class="form-toevoegen-verkoper container d-flex justify-content-center align-items-center mt-5 mb-5 h-100 p-3">
         <div class="col-md-8">
             <h2 class="text-white">{{ $title }}</h2>
-            <form method="POST" action="{{ route('verkoper.update', $verkoper) }}">
+            <form method="POST" action="{{ route('verkoper.update', $verkoper->id) }}">
                 @csrf
+                @method('PUT')
+                <input type="hidden" name="id" value="{{ $verkoper->id }}">
                 <div class="mb-2 justify-content-center">
                     <label for="InputNaam" class="form-label text-white">Naam</label>
                     
