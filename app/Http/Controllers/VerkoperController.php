@@ -105,7 +105,10 @@ class VerkoperController extends Controller
      */
     public function edit(VerkoperModel $verkoper): View
     {
-        return view('verkoper.edit', compact('verkoper'));
+        return view(
+        'verkoper.edit', [
+            'title' => 'verkoper wijzigen'
+        ], compact('verkoper'));
     }
 
     /**
