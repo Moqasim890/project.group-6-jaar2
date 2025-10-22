@@ -25,6 +25,7 @@ class VerkoperController extends Controller
     {
         $verkopers = $this->VerkoperModel->sp_GetAllVerkopers();
 
+        // dd($verkopers);
         return view('verkoper.index', [
             'verkopers' => $verkopers
         ]);
