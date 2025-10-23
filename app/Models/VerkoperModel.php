@@ -138,21 +138,27 @@ class VerkoperModel extends Model
 
 
     //FIX
-    // public function sp_getVerkoperById($id)
-    // {
-    //     try {
-    //         // Log::info('Calling SP_GetEventByID', ['id' => $id]);
-    //         $result = DB::selectOne('CALL SP_GetVerkoperById(?)', [$id]);
-    //         // Log::info('SP_GetEventByID completed', ['found' => !empty($result)]);
-    //         return $result;
-    //     } catch (\Exception $e) {
-    //         Log::error('Error in SP_GetEventByID: ' . $e->getMessage(), [
-    //             'id' => $id,
-    //             'exception' => $e
-    //         ]);
-    //         throw $e;
-    //     }
-    // }
+    public function sp_getVerkoperById($id)
+    {
+        try {
+            Log::info('EXECUTING sp_UpdateVerkoper', ['id' => $id]);
+            $result = DB::selectOne('CALL sp_getVerkoperById(?)', [$id]);
+
+            if (!$result) {
+                Log::info('sp_UpdateVerkoper EXECUTED SUCCESFULLY  NO ID FOUND!');
+            } else {
+                Log::info('sp_UpdateVerkoper EXECUTED SUCCESFULLY ID FOUND', ['ID' => $result] );
+            }
+            
+            return $result;
+        } catch (\Exception $e) {
+            Log::error('Error in SP_GetEventByID: ' . $e->getMessage(), [
+                'id' => $id,
+                'exception' => $e
+            ]);
+            throw $e;
+        }
+    }
 
     public function sp_UpdateVerkoper($id, $data) // <- Parameters
     {   

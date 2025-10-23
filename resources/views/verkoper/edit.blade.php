@@ -1,5 +1,19 @@
 <x-layout>
     @vite(['resources/css/verkopers-style.css'])
+    <div class="container">
+        <div class="row d-flex justify-content-center mt-2">
+            <div class="col-12">
+                @if (session('error'))
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        {{ session('error') }}
+                        <button type="button" class="btn-close" aria-label="sluiten" data-bs-dismiss="alert"></button>
+                    </div>
+                    <meta http-equiv="refresh" content="3;url={{ route('verkoper.edit', $verkoper->id) }}">
+                @endif
+            </div>
+        </div>
+    </div>
+
     <div class="form-toevoegen-verkoper container d-flex justify-content-center align-items-center mt-5 mb-5 h-100 p-3">
         <div class="col-md-8">
             <h2 class="text-white">{{ $title }}</h2>

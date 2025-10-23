@@ -92,6 +92,7 @@ class VerkoperController extends Controller
                         // met melding met als Key success en Value ...
                          ->with('success', "Verkoper is succesvol toegevoegd:" . $data['Naam']);
     }
+
     /**
      * Toon één verkoper.
      */
@@ -103,8 +104,13 @@ class VerkoperController extends Controller
     /**
      * Formulier bewerken van een verkoper.
      */
-    public function edit(VerkoperModel $verkoper): View
+    public function edit($id)
     {
+        //FIX
+        $verkoper = $this->VerkoperModel->sp_getVerkoperById($id);
+        if (!$verkoper) {
+            return redirect()->back()->with('error', 'Deze verkoper bestaat niet.');
+        }
 
         // dd($verkoper);
         return view(
@@ -118,11 +124,6 @@ class VerkoperController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //FIX
-        // $verkoper = $this->VerkoperModel::find($id);
-        // if (!$verkoper) {
-        //     return redirect()->back()->with('error', 'Deze verkoper bestaat niet.');
-        // }
         $data = $request->validate([
             'id'            => 'required|integer',
             'Naam'          => 'required|string|max:200',
