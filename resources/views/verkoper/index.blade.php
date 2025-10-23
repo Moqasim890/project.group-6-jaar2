@@ -40,7 +40,7 @@
                                     @endif
                                 </td>
                                 <td>
-                                    <form action="{{ 'verkoper.destroy', $verkoper->id }}" onsubmit="return confirm('weet je zeker dat je {{ $verkoper->Naam }} wilt verwijderen?')">
+                                    <form action="{{ route('verkoper.destroy', $verkoper->id) }}" method="POST" onsubmit="return confirm('weet je zeker dat je {{ $verkoper->Naam }} wilt verwijderen?')">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-danger w-100">

@@ -135,5 +135,15 @@ class VerkoperModel extends Model
             return "Er ging iets fout, probeer later opnieuw"; 
         } 
     }
+
+    public function sp_DeleteVerkoper($id)
+    {
+        $result = DB::selectOne(
+            'CALL sp_DeleteVerkoper(:id)', 
+            [
+                'id' => $id
+            ]);
+        return $result->affected ?? 0;
+    }
 }
 

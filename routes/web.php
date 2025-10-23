@@ -21,7 +21,7 @@ Route::get('evenements/{evenement}', [EvenementController::class, 'show'])->name
 Route::resource('verkoper', VerkoperController::class);
 Route::get('evenements/{evenement}', [EvenementController::class, 'show'])->name('evenements.show');
 Route::post('/verkoper/create', [VerkoperController::class, 'store'])->name('verkoper.store');
-
+Route::delete('/verkoper/{id}', [VerkoperController::class, 'destroy'])->name('verkoper.destroy');
 
 // Admin routes for managing ticket prices (prijzen)
 Route::prefix('admin/prijzen')->name('admin.prijzen.')->group(function () {
