@@ -6,7 +6,7 @@
             <div class="col-12">
                 <h1 class="page-titel">Alle verkopers</h1>
                 <p class="page-tekst">meer info over verkopers is hier te vinden</p>
-                <a href="/verkoper/create" id="add-verkoper">Verkoper Toevoegen +</a>
+                <a href="/verkoper/create" class="btn btn-success w-25 border-black mb-2">Verkoper Toevoegen +</a>
                 @if (session('success'))
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
                         {{ session('success') }}
@@ -22,6 +22,7 @@
                         <th scope="col">Stand Type</th>
                         <th scope="col">Dagen</th>
                         <th scope="col">Logo</th>
+                        <th scope="col">Verwijderen</th>
                     </thead>
                     <tbody>
                         @forelse ($verkopers as $verkoper)
@@ -37,6 +38,15 @@
                                     @else
                                         geen logo
                                     @endif
+                                </td>
+                                <td>
+                                    <form action="{{ 'verkoper.destroy', $verkoper->id }}" onsubmit="return confirm('weet je zeker dat je {{ $verkoper->Naam }} wilt verwijderen?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger w-100">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
                                 </td>
                             </tr>
                         @empty
