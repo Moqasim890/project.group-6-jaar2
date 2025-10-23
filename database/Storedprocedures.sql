@@ -24,6 +24,20 @@ DROP PROCEDURE IF EXISTS sp_GetAllVerkopers $$
 DROP PROCEDURE IF EXISTS sp_GetVerkoperByNaam $$
 DROP PROCEDURE IF EXISTS sp_CreateVerkoper $$
 DROP PROCEDURE IF EXISTS sp_UpdateVerkoper $$
+DROP PROCEDURE IF EXISTS sp_GetVerkoperById $$
+
+-- FIX
+-- CREATE PROCEDURE SP_GetVerkoperById(
+--     IN id INT
+-- )
+-- BEGIN
+--     SELECT *
+--     FROM
+--         verkopers
+--     WHERE
+--         id = id;
+-- END $$
+
 
 CREATE PROCEDURE sp_UpdateVerkoper(
     IN v_id               INT,

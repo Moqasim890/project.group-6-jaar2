@@ -136,15 +136,31 @@ class VerkoperModel extends Model
         } 
     }
 
+
+    //FIX
+    // public function sp_getVerkoperById($id)
+    // {
+    //     try {
+    //         // Log::info('Calling SP_GetEventByID', ['id' => $id]);
+    //         $result = DB::selectOne('CALL SP_GetVerkoperById(?)', [$id]);
+    //         // Log::info('SP_GetEventByID completed', ['found' => !empty($result)]);
+    //         return $result;
+    //     } catch (\Exception $e) {
+    //         Log::error('Error in SP_GetEventByID: ' . $e->getMessage(), [
+    //             'id' => $id,
+    //             'exception' => $e
+    //         ]);
+    //         throw $e;
+    //     }
+    // }
+
     public function sp_UpdateVerkoper($id, $data) // <- Parameters
     {   
         // try om code te runnen
         try 
         { 
-            // DB = class
-            // selectOne = function binnen class DB
-            // selectOne gebruiken omdat ik maar een row verwacht als resultaat
-            return DB::select('CALL sp_UpdateVerkoper(?, ?, ?, ?, ?, ?, ?)', [
+            Log::info('EXECUTING sp_UpdateVerkoper');
+            $result = DB::select('CALL sp_UpdateVerkoper(?, ?, ?, ?, ?, ?, ?)', [
                 $id,
                 $data['Naam'],
                 $data['SpecialeStatus'],
@@ -153,12 +169,13 @@ class VerkoperModel extends Model
                 $data['Dagen'],
                 $data['LogoUrl'] ?? null
             ]);
-
+            Log::info('sp_UpdateVerkoper EXECUTED SUCCESFULLY');
+            return $result;
         // als try is gefailed catch error en logt het
         } catch (\Exception $e) 
         { 
             // logt foutmelding in laravel log bestand
-            Log::error('CreateVerkoper failed: ' . $e->getMessage());
+            Log::error('EXECUTION sp_UpdateVerkoper FAILED: ' . $e->getMessage());
             
             // return een foutmelding
             return "Er ging iets fout, probeer later opnieuw"; 

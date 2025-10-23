@@ -118,6 +118,11 @@ class VerkoperController extends Controller
      */
     public function update(Request $request, $id)
     {
+        //FIX
+        // $verkoper = $this->VerkoperModel::find($id);
+        // if (!$verkoper) {
+        //     return redirect()->back()->with('error', 'Deze verkoper bestaat niet.');
+        // }
         $data = $request->validate([
             'id'            => 'required|integer',
             'Naam'          => 'required|string|max:200',
@@ -127,6 +132,10 @@ class VerkoperController extends Controller
             'Dagen'         => 'required|string',
             'LogoUrl'       => 'nullable|string|max:500',
         ]);
+
+        if ($data['Naam'] === "-1" || $data['LogoUrl'] === "-1") {
+            return "Kan Niet!";
+        }
 
         $this->VerkoperModel->sp_UpdateVerkoper($id, $data);
 
