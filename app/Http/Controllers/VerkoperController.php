@@ -101,29 +101,35 @@ class VerkoperController extends Controller
         return view('verkoper.show', compact('verkoper'));
     }
 
-    /**
-     * Formulier bewerken van een verkoper.
-     */
+    /*
+        naar pagina sturen en checken of de id bestaat
+    */
     public function edit($id)
     {
-        //FIX
+        // voert stored procedure uit en slaat gegevens op in $verkoper
         $verkoper = $this->VerkoperModel->sp_getVerkoperById($id);
+
+        // controleer of er iets is opgehaald
         if (!$verkoper) {
+            // als er niks is opgehaald redirect terug met fout melding
             return redirect()->back()->with('error', 'Deze verkoper bestaat niet.');
         }
 
         // dd($verkoper);
+
+        // de view
         return view(
         'verkoper.edit', [
             'title' => 'verkoper wijzigen'
         ], compact('verkoper'));
     }
 
-    /**
-     * Update een verkoper.
-     */
+    /*
+        Update een verkoper op id
+    */
     public function update(Request $request, $id)
     {
+        // haalt data op uit request en valideert het en zet het in $data
         $data = $request->validate([
             'id'            => 'required|integer',
             'Naam'          => 'required|string|max:200',
@@ -134,12 +140,16 @@ class VerkoperController extends Controller
             'LogoUrl'       => 'nullable|string|max:500',
         ]);
 
+        // controlleert of naam of logoUrl "-1" want dat mag niet van mazin
         if ($data['Naam'] === "-1" || $data['LogoUrl'] === "-1") {
-            return "Kan Niet!";
+            // stuurt terug naar edit met melding
+            return redirect()->back()->with('error', '-1 MAG NIET!');
         }
 
+        // voer stored procedure uit met gevalideerde data en id
         $this->VerkoperModel->sp_UpdateVerkoper($id, $data);
 
+        // redirect naar index met success melding
         return redirect()->route('verkoper.index')->with('success', 'Verkoper bijgewerkt!');
     }
 

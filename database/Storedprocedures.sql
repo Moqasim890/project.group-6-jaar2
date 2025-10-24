@@ -26,7 +26,6 @@ DROP PROCEDURE IF EXISTS sp_CreateVerkoper $$
 DROP PROCEDURE IF EXISTS sp_UpdateVerkoper $$
 DROP PROCEDURE IF EXISTS sp_getVerkoperById $$
 
--- FIX
 CREATE PROCEDURE sp_getVerkoperById(
     IN v_id INT
 )
@@ -34,8 +33,8 @@ BEGIN
     SELECT * FROM verkopers WHERE id = v_id;
 END $$
 
-
 CREATE PROCEDURE sp_UpdateVerkoper(
+    -- input parameters
     IN v_id               INT,
     IN v_Naam             VARCHAR(100),
     IN v_SpecialeStatus   VARCHAR(10),

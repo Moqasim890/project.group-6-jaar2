@@ -140,52 +140,68 @@ class VerkoperModel extends Model
     //FIX
     public function sp_getVerkoperById($id)
     {
+        // gebruik try om mogelijke fouten af te vangen
         try {
+            // log dat de stored procedure word uitgevoerd
             Log::info('EXECUTING sp_UpdateVerkoper', ['id' => $id]);
+            
+            // voer stored procedute uit en zet het resultaat in $result
             $result = DB::selectOne('CALL sp_getVerkoperById(?)', [$id]);
 
+            // controleer of $result leeg is log dat het fout is gegaan
             if (!$result) {
                 Log::info('sp_UpdateVerkoper EXECUTED SUCCESFULLY  NO ID FOUND!');
+
+            // anders log dat het goed is gegaan
             } else {
                 Log::info('sp_UpdateVerkoper EXECUTED SUCCESFULLY ID FOUND', ['ID' => $result] );
             }
             
+            // geef result terug
             return $result;
+
+        // error afhandelen
         } catch (\Exception $e) {
-            Log::error('Error in SP_GetEventByID: ' . $e->getMessage(), [
-                'id' => $id,
-                'exception' => $e
-            ]);
-            throw $e;
+            // logt foutmelding in laravel.log bestand
+            Log::error('EXECUTION sp_getVerkoperById FAILED: ' . $e->getMessage());
+            
+            // return een foutmelding
+            return "Er ging iets fout, probeer later opnieuw"; 
         }
     }
 
     public function sp_UpdateVerkoper($id, $data) // <- Parameters
     {   
-        // try om code te runnen
-        try 
-        { 
+        // gebruik try om mogelijke fouten af te vangen
+        try { 
+            // log dat de stored procedure word uitgevoerd
             Log::info('EXECUTING sp_UpdateVerkoper');
-            $result = DB::select('CALL sp_UpdateVerkoper(?, ?, ?, ?, ?, ?, ?)', [
+            
+            // voer de stored procedure uit en zet resultaat in $result
+            $result = DB::select('CALL sp_UpdateVerkoper(?, ?, ?, ?, ?, ?, ?)', [ // <- ? = placeholder. plaatsen worden genomen door waarden in array
                 $id,
                 $data['Naam'],
                 $data['SpecialeStatus'],
                 $data['VerkooptSoort'],
                 $data['StandType'],
                 $data['Dagen'],
-                $data['LogoUrl'] ?? null
+                $data['LogoUrl'] ?? null // <- als LogoUrl er is dan dat ander null
             ]);
+
+            // log dat het goed is gegaan
             Log::info('sp_UpdateVerkoper EXECUTED SUCCESFULLY');
+
+            // geef result terug
             return $result;
-        // als try is gefailed catch error en logt het
-        } catch (\Exception $e) 
-        { 
-            // logt foutmelding in laravel log bestand
+        
+        // error afhandelen
+        } catch (\Exception $e) {
+            // logt foutmelding in laravel.log bestand
             Log::error('EXECUTION sp_UpdateVerkoper FAILED: ' . $e->getMessage());
             
             // return een foutmelding
             return "Er ging iets fout, probeer later opnieuw"; 
-        } 
+        }
     } 
 }
 
