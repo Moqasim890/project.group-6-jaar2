@@ -7,6 +7,7 @@
                 <h1 class="page-titel">Alle verkopers</h1>
                 <p class="page-tekst">meer info over verkopers is hier te vinden</p>
                 <a href="/verkoper/create" class="btn btn-success w-25 border-black mb-2">Verkoper Toevoegen +</a>
+                {{-- meldingen kunnen beter --}}
                 @if (session('success'))
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
                         {{ session('success') }}
@@ -48,7 +49,9 @@
                                     @endif
                                 </td>
                                 <td>
-                                    <form action="{{ route('verkoper.destroy', $verkoper->id) }}" method="POST" onsubmit="return confirm('weet je zeker dat je {{ $verkoper->Naam }} wilt verwijderen?')">
+                                    <form action="{{ route('verkoper.destroy', $verkoper->id) }}" method="POST" 
+                                          onsubmit="return confirm('weet je zeker dat je {{ $verkoper->Naam }} wilt verwijderen?')">
+                                        {{-- csrf = Cross Site Request Forgery --}}
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-danger w-100">

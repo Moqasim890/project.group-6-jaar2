@@ -136,14 +136,42 @@ class VerkoperModel extends Model
         } 
     }
 
+    /*
+        Verwijder verkoper op id
+    */
     public function sp_DeleteVerkoper($id)
-    {
-        $result = DB::selectOne(
-            'CALL sp_DeleteVerkoper(:id)', 
-            [
-                'id' => $id
-            ]);
-        return $result->affected ?? 0;
+    {    
+        // gebruik try om mogelijke fouten af te vangen
+        try {   
+            // log dat de stored procedure word uitgevoerd
+            Log::info('EXECUTING sp_DeleteVerkoper ON', ['id' => $id]);
+            
+            // voer de stored procedure uit en sla het resultaat op in $result
+            $result = DB::selectOne(
+                'CALL sp_DeleteVerkoper(:id)', 
+                [
+                    'id' => $id
+                ]);
+            
+            // controleer of $result leeg is log dat het fout is gegaan
+            if (!$result) {
+                Log::info('sp_DeleteVerkoper EXECUTION FAILED ');
+
+            // anders log dat het goed is gegaan
+            } else {
+                Log::info('sp_DeleteVerkoper EXECUTED SUCCESFULLY ');
+            }
+            
+            // geef result terug
+            return $result->affected ?? 0; // <- checkt hoeveel rijen zijn beinvloed ander geeft het 0 (dus niet succesvol)
+
+        // error afhandelen
+        } catch (\Exception $e) { 
+            // logt foutmelding in laravel.log bestand
+            Log::error('EXECUTION sp_DeleteVerkoper FAILED: ' . $e->getMessage());
+            
+            // return een foutmelding
+            return "Er ging iets fout, probeer later opnieuw"; 
+        } 
     }
 }
-

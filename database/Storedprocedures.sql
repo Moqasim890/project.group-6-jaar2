@@ -25,16 +25,16 @@ DROP PROCEDURE IF EXISTS sp_GetVerkoperByNaam $$
 DROP PROCEDURE IF EXISTS sp_CreateVerkoper $$
 DROP PROCEDURE IF EXISTS sp_DeleteVerkoper $$
 
-
 CREATE PROCEDURE sp_DeleteVerkoper(
+    -- input parameters
     IN p_id int
 )
 BEGIN
-    -- Verwijder het record in de tabel allergeen
-    DELETE FROM verkoper 
+    -- verwijder het record in de tabel verkopers op id
+    DELETE FROM verkoper
     WHERE Id = p_id;
 
-    -- Bepaal hoeveel rijen verwijdert zijn (0 of 1)
+    -- hoeveel rijen verwijdert zijn (0 of 1)
     SELECT ROW_COUNT() AS affected;
 
 END $$
