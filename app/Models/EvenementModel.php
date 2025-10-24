@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-class Evenementmodel extends Model
+class EvenementModel extends Model
 {
     protected $table = 'evenements';
     protected $primaryKey = 'id';

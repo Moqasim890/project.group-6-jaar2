@@ -18,14 +18,6 @@ return new class extends Migration {
             $table->timestamp('DatumGewijzigd')->useCurrent()->useCurrentOnUpdate();
         });
 
-        DB::table('organisators')->insert([
-            [
-                'Naam' => 'Admin',
-                'Gebruikersnaam' => 'admin',
-                // Wachtwoord is 'password', gehashed met bcrypt
-                'Wachtwoord' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
-            ],
-        ]);
     }
 
     public function down(): void {

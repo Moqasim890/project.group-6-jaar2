@@ -1,3 +1,6 @@
+DROP DATABASE IF EXISTS laravel;
+CREATE DATABASE laravel;
+
 CREATE TABLE `Organisator` (
   `Id` int PRIMARY KEY,
   `Naam` varchar(255),

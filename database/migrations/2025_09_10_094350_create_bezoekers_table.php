@@ -17,12 +17,6 @@ return new class extends Migration {
             $table->timestamp('DatumGewijzigd')->useCurrent()->useCurrentOnUpdate();
         });
 
-        DB::table('bezoekers')->insert([
-            [
-                'Naam' => 'Bezoeker 1',
-                'EmailAdres' => 'bezoeker1@voorbeeld.nl',
-            ],
-        ]);
     }
     public function down(): void {
         Schema::dropIfExists('bezoekers');
