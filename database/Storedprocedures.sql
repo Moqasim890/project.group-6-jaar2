@@ -23,8 +23,24 @@ DROP PROCEDURE IF EXISTS SP_CreateOrGetBezoeker $$
 DROP PROCEDURE IF EXISTS sp_GetAllVerkopers $$
 DROP PROCEDURE IF EXISTS sp_GetVerkoperByNaam $$
 DROP PROCEDURE IF EXISTS sp_CreateVerkoper $$
+DROP PROCEDURE IF EXISTS sp_DeleteVerkoper $$
 DROP PROCEDURE IF EXISTS sp_UpdateVerkoper $$
 DROP PROCEDURE IF EXISTS sp_getVerkoperById $$
+
+CREATE PROCEDURE sp_DeleteVerkoper(
+    -- input parameters
+    IN p_id int
+)
+BEGIN
+    -- verwijder het record in de tabel verkopers op id
+    DELETE FROM verkoper
+    WHERE Id = p_id;
+
+    -- hoeveel rijen verwijdert zijn (0 of 1)
+    SELECT ROW_COUNT() AS affected;
+
+END $$
+
 
 CREATE PROCEDURE sp_getVerkoperById(
     IN v_id INT

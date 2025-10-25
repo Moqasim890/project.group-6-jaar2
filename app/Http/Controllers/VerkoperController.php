@@ -153,13 +153,23 @@ class VerkoperController extends Controller
         return redirect()->route('verkoper.index')->with('success', 'Verkoper bijgewerkt!');
     }
 
-    /**
-     * Verwijder een verkoper.
-     */
-    public function destroy(VerkoperModel $verkoper): RedirectResponse
-    {
-        $verkoper->delete();
+    /*
+        Verwijder verkoper op id
+    */
+    public function destroy($id)
+    {   
+        // voer stored procedure uit en sla het resultaat op in $result
+        $result = $this->VerkoperModel->sp_DeleteVerkoper($id);
 
-        return redirect()->route('verkoper.index')->with('success', 'Verkoper verwijderd!');
+        // controleer of de verkoper succesvol is verwijderd
+        if ($result > 0) {
+            // redirect naar de index met een succes melding
+            return redirect()->route('verkoper.index')
+                             ->with('success', 'Verkoper is succesvol verwijdert.');
+        }
+
+        // als verwijderen is mislukt redirect terug met een fout melding
+        return redirect()->route('verkoper.index')
+                         ->with('error', 'Verkoper is niet gevonden of niet verwijderd.');
     }
 }
