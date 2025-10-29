@@ -30,6 +30,7 @@
                         <th scope="col">Verkoop soort</th>
                         <th scope="col">Stand Type</th>
                         <th scope="col">Dagen</th>
+                        <th scope="col">Is Actief</th>
                         <th scope="col">Logo</th>
                         <th scope="col">Verwijderen</th>
                         <th scope="col">Wijzigen</th>
@@ -42,6 +43,13 @@
                                 <td>{{ $verkoper->VerkooptSoort }}</td>
                                 <td>{{ $verkoper->StandType }}</td>
                                 <td>{{ $verkoper->Dagen }}</td>
+                                <td>
+                                    @if($verkoper->IsActief)
+                                        JA
+                                    @else
+                                        NEE
+                                    @endif
+                                </td>
                                 <td>
                                     @if($verkoper->LogoUrl)
                                         <img class="logo-verkoper" src="{{ $verkoper->LogoUrl }}" alt="Logo">

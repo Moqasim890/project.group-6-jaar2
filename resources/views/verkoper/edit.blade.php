@@ -77,6 +77,10 @@
                     <label for="InputLogoUrl" class="form-label text-white">Logo URL</label>
                     <input name="LogoUrl" type="text" id="InputLogoUrl" value="{{ old('LogoUrl', $verkoper->LogoUrl) }}">
                 </div>
+                <div class="mb-2">
+                    <label for="IsActief" class="form-label text-white">is actief</label>
+                    <input type="checkbox" name="IsActief" value="1" {{ old('IsActief', $verkoper->IsActief) ? 'checked' : '' }} style="height:15px;">
+                </div>
                 <div>
                     @error('Naam')
                         <p class="text-danger">{{ $message }}</p>

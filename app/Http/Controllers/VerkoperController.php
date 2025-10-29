@@ -125,22 +125,43 @@ class VerkoperController extends Controller
     }
 
     /*
-        Update een verkoper op id
+    *   probleem:
+    *   check of naam in array zit wat zo is
+    *   als je iets anders dan naam weizigd dan krijg je error
     */
     public function update(Request $request, $id)
     {
         // haalt data op uit request en valideert het en zet het in $data
         $data = $request->validate([
-            'id'            => 'required|integer',
             'Naam'          => 'required|string|max:200',
             'SpecialeStatus'=> 'required|string',
             'VerkooptSoort' => 'required|string',
             'StandType'     => 'required|string',
             'Dagen'         => 'required|string',
             'LogoUrl'       => 'nullable|string|max:500',
+            'IsActief'      => 'nullable|boolean',
         ]);
 
-        // controlleert of naam of logoUrl "-1" want dat mag niet van mazin
+        // Checkbox fix
+        $data['IsActief'] = $request->has('IsActief');
+
+
+        $verkopers = $this->VerkoperModel->sp_GetAllVerkopers();
+        
+        $namen = [];
+
+        // verzamel eerst alle namen
+        foreach ($verkopers as $verkoper) {
+            $namen[] = $verkoper->Naam; // <-array vullen met alle namen die in verkoper zitten
+        }
+
+        // controleer of de ingevoerde naam al voorkomt
+        if (in_array($data['Naam'], $namen)) {
+            return redirect()->back()->with('error', 'Deze naam wordt al gebruikt.');
+        }
+
+
+        // controlleert of Naam of logoUrl alleen nummers zijn want dat mag niet van mazin
         if (is_numeric($data['Naam']) || is_numeric($data['LogoUrl'])) {
             // stuurt terug naar edit met melding
             return redirect()->back()->with('error', 'Mag niet alleen getallen zijn');
@@ -158,6 +179,13 @@ class VerkoperController extends Controller
     */
     public function destroy($id)
     {   
+        $verkoper = $this->VerkoperModel->sp_getVerkoperById($id);
+
+        if ($verkoper->IsActief) {
+            return redirect()->back()
+                            ->with('error', 'Deze gebruiker is nog actief');
+        }
+
         // voer stored procedure uit en sla het resultaat op in $result
         $result = $this->VerkoperModel->sp_DeleteVerkoper($id);
 

@@ -172,14 +172,15 @@ class VerkoperModel extends Model
             Log::info('EXECUTING sp_UpdateVerkoper');
             
             // voer de stored procedure uit en zet resultaat in $result
-            $result = DB::select('CALL sp_UpdateVerkoper(?, ?, ?, ?, ?, ?, ?)', [ // <- ? = placeholder. plaatsen worden genomen door waarden in array
+            $result = DB::select('CALL sp_UpdateVerkoper(?, ?, ?, ?, ?, ?, ?, ?)', [ // <- ? = placeholder. plaatsen worden genomen door waarden in array
                 $id,
                 $data['Naam'],
                 $data['SpecialeStatus'],
                 $data['VerkooptSoort'],
                 $data['StandType'],
                 $data['Dagen'],
-                $data['LogoUrl'] ?? null // <- als LogoUrl er is dan dat ander null
+                $data['LogoUrl'] ?? null, // <- als LogoUrl er is dan dat ander null
+                $data['IsActief']
             ]);
 
             // log dat het goed is gegaan
