@@ -141,9 +141,9 @@ class VerkoperController extends Controller
         ]);
 
         // controlleert of naam of logoUrl "-1" want dat mag niet van mazin
-        if ($data['Naam'] === "-1" || $data['LogoUrl'] === "-1") {
+        if (is_numeric($data['Naam']) || is_numeric($data['LogoUrl'])) {
             // stuurt terug naar edit met melding
-            return redirect()->back()->with('error', '-1 MAG NIET!');
+            return redirect()->back()->with('error', 'Mag niet alleen getallen zijn');
         }
 
         // voer stored procedure uit met gevalideerde data en id

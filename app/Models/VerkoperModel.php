@@ -148,14 +148,8 @@ class VerkoperModel extends Model
             // voer stored procedute uit en zet het resultaat in $result
             $result = DB::selectOne('CALL sp_getVerkoperById(?)', [$id]);
 
-            // controleer of $result leeg is log dat het fout is gegaan
-            if (!$result) {
-                Log::info('sp_UpdateVerkoper EXECUTED SUCCESFULLY  NO ID FOUND!');
-
-            // anders log dat het goed is gegaan
-            } else {
-                Log::info('sp_UpdateVerkoper EXECUTED SUCCESFULLY ID FOUND', ['ID' => $result] );
-            }
+            // log dat het goed is gegaan
+            Log::info('sp_UpdateVerkoper EXECUTED SUCCESFULLY ID FOUND', ['ID' => $result] );
             
             // geef result terug
             return $result;
