@@ -221,15 +221,8 @@ class VerkoperModel extends Model
                     'id' => $id
                 ]);
             
-            // controleer of $result leeg is log dat het fout is gegaan
-            if (!$result) {
-                Log::info('sp_DeleteVerkoper EXECUTION FAILED ');
-
-            // anders log dat het goed is gegaan
-            } else {
-                Log::info('sp_DeleteVerkoper EXECUTED SUCCESFULLY ');
-            }
             
+            Log::info('sp_DeleteVerkoper EXECUTED SUCCESFULLY ');
             // geef result terug
             return $result->affected ?? 0; // <- checkt hoeveel rijen zijn beinvloed ander geeft het 0 (dus niet succesvol)
 
