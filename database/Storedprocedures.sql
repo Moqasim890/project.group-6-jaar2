@@ -1,5 +1,4 @@
 
-USE laravel;
 
 DELIMITER $$
 
@@ -22,10 +21,22 @@ DROP PROCEDURE IF EXISTS SP_GetPrijsByID $$
 DROP PROCEDURE IF EXISTS SP_CreateOrGetBezoeker $$
 DROP PROCEDURE IF EXISTS sp_GetAllVerkopers $$
 DROP PROCEDURE IF EXISTS sp_GetVerkoperByNaam $$
+DROP PROCEDURE IF EXISTS sp_GetAllVerkopersNaam $$
 DROP PROCEDURE IF EXISTS sp_CreateVerkoper $$
 DROP PROCEDURE IF EXISTS sp_DeleteVerkoper $$
 DROP PROCEDURE IF EXISTS sp_UpdateVerkoper $$
 DROP PROCEDURE IF EXISTS sp_getVerkoperById $$
+
+CREATE PROCEDURE sp_GetAllVerkopersNaam (
+    IN v_id INT,
+    IN v_Naam VARCHAR(100)
+)
+BEGIN
+    SELECT COUNT(*) AS Aantal
+    FROM verkopers
+    WHERE Naam COLLATE utf8mb4_unicode_ci = v_Naam COLLATE utf8mb4_unicode_ci
+    AND Id != v_Id; -- sluit zichzelf uit
+END $$
 
 CREATE PROCEDURE sp_DeleteVerkoper(
     -- input parameters
@@ -33,7 +44,7 @@ CREATE PROCEDURE sp_DeleteVerkoper(
 )
 BEGIN
     -- verwijder het record in de tabel verkopers op id
-    DELETE FROM verkoper
+    DELETE FROM verkopers
     WHERE Id = p_id;
 
     -- hoeveel rijen verwijdert zijn (0 of 1)
@@ -448,6 +459,3 @@ BEGIN
 END $$
 
 DELIMITER ;
-
-
-

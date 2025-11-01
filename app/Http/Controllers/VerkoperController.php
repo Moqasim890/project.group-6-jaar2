@@ -145,21 +145,12 @@ class VerkoperController extends Controller
         // Checkbox fix
         $data['IsActief'] = $request->has('IsActief');
 
+        $existingNaam = $this->VerkoperModel->sp_GetAllVerkopersNaam($data['Naam'], $id);
 
-        $verkopers = $this->VerkoperModel->sp_GetAllVerkopers();
-        
-        $namen = [];
-
-        // verzamel eerst alle namen
-        foreach ($verkopers as $verkoper) {
-            $namen[] = $verkoper->Naam; // <-array vullen met alle namen die in verkoper zitten
-        }
-
-        // controleer of de ingevoerde naam al voorkomt
-        if (in_array($data['Naam'], $namen)) {
+        // dd($existingNaam);
+        if ($existingNaam[0]->Aantal > 0) {
             return redirect()->back()->with('error', 'Deze naam wordt al gebruikt.');
         }
-
 
         // controlleert of Naam of logoUrl alleen nummers zijn want dat mag niet van mazin
         if (is_numeric($data['Naam']) || is_numeric($data['LogoUrl'])) {

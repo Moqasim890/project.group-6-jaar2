@@ -100,6 +100,33 @@ class VerkoperModel extends Model
             return "Er ging iets fout, probeer later opnieuw"; 
         } 
     } 
+
+    public function sp_GetAllVerkopersNaam($naam, $id)
+    {
+        try
+        {
+            Log::info('EXECUTING sp_GetAllVerkopersNaam', ['naam' => $naam]);
+            $result = DB::select(
+                'CALL sp_GetAllVerkopersNaam
+                (   
+                    :id,
+                    :Naam
+                )',
+                [
+                    'id' => $id,
+                    'Naam' => $naam
+                ]
+            );
+            Log::info('sp_GetAllVerkopersNaam EXECUTED SUCCESFULLY', ['Aantal' => $result]);
+            return $result;
+        } catch(\Exception $e) {
+            // logt foutmelding in laravel log bestand
+            Log::error('EXECUTION failed: ' . $e->getMessage());
+
+            // return een foutmelding
+            return "Er ging iets fout, probeer later opnieuw"; 
+        }
+    }
     
     public function sp_GetVerkoperByNaam($naam) 
     { 
