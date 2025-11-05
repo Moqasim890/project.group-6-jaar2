@@ -48,11 +48,17 @@
           @foreach($events as $e)
             <div class="group rounded-3xl border-2 border-pink-200 bg-white shadow-lg transition hover:shadow-xl flex flex-col">
               <div class="p-7 flex-1 flex flex-col">
-                {{-- Bovenste rij: datum badge + id --}}
-                <div class="mb-5 flex items-center justify-between">
-                  <span class="inline-flex items-center rounded-full bg-pink-100 px-4 py-1 text-sm font-bold text-pink-700">
-                    {{ \Illuminate\Support\Carbon::parse($e->Datum)->locale('nl')->translatedFormat('d MMM Y') }}
-                  </span>
+                {{-- Bovenste rij: datum badge + status + id --}}
+                <div class="mb-5 flex items-center justify-between gap-3">
+                  <div class="flex items-center gap-2">
+                    <span class="inline-flex items-center rounded-full bg-pink-100 px-4 py-1 text-sm font-bold text-pink-700">
+                      {{ \Illuminate\Support\Carbon::parse($e->Datum)->locale('nl')->translatedFormat('d MMM Y') }}
+                    </span>
+                    <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-bold
+                      {{ $e->IsActief ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-700' }}">
+                      {{ $e->IsActief ? 'Actief' : 'Inactief' }}
+                    </span>
+                  </div>
                   <span class="text-xs uppercase tracking-wider text-gray-400">#{{ $e->id }}</span>
                 </div>
 
@@ -79,7 +85,7 @@
               </div>
 
               {{-- Acties verticaal --}}
-              <div class="flex flex-col gap-2 px-7 pb-7">
+              <div class="flex flex-col gap-2 px-7 pb-3">
                 <a href="{{ route('evenements.show', $e) }}"
                    class="inline-flex items-center justify-center rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-indigo-700 transition">
                   <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -87,6 +93,7 @@
                   </svg>
                   Details
                 </a>
+
                 <a href="{{ route('evenements.edit', $e) }}"
                    class="inline-flex items-center justify-center rounded-xl bg-pink-500 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-pink-600 transition">
                   <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -94,25 +101,47 @@
                   </svg>
                   Bewerken
                 </a>
-                <form method="POST" action="{{ route('evenements.destroy', $e) }}"
-                      onsubmit="return confirm('Weet je zeker dat je dit evenement wilt verwijderen?')">
-                  @csrf
-                  @method('DELETE')
-                  <button type="submit"
-                    class="inline-flex items-center justify-center rounded-xl bg-red-500 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-red-600 transition">
+
+                {{-- Verwijderen: alleen als NIET actief --}}
+                @if(!$e->IsActief)
+                  <form method="POST" action="{{ route('evenements.destroy', $e) }}"
+                        onsubmit="return confirm('Weet je zeker dat je dit (inactieve) evenement wilt verwijderen?')">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit"
+                      class="inline-flex items-center justify-center rounded-xl bg-red-500 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-red-600 transition">
+                      <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                      </svg>
+                      Verwijderen
+                    </button>
+                  </form>
+                @else
+                  <button type="button" disabled
+                          title="Actieve evenementen kunnen niet worden verwijderd"
+                          class="inline-flex items-center justify-center rounded-xl bg-gray-300 px-4 py-2 text-sm font-semibold text-gray-600 cursor-not-allowed">
                     <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
                     </svg>
-                    Verwijderen
+                    Verwijderen (geblokkeerd)
                   </button>
-                </form>
+                @endif
               </div>
+
+              {{-- Extra melding onderaan de kaart bij actief --}}
+              @if($e->IsActief)
+                <div class="px-7 pb-7">
+                  <p class="mt-2 text-xs font-semibold text-yellow-700 bg-yellow-50 border border-yellow-200 rounded-lg px-3 py-2">
+                    ⚠ Dit evenement is actief en kan niet worden verwijderd. Zet het eerst op “Inactief” via <em>Bewerken</em>.
+                  </p>
+                </div>
+              @endif
             </div>
           @endforeach
         </div>
 
         <div class="mt-10">
-          {{ $events->links() }}
+          {{ $events->withQueryString()->links() }}
         </div>
       @else
         <div class="rounded-3xl border-2 border-pink-200 bg-white p-16 text-center shadow-lg">
@@ -187,7 +216,7 @@
         const successModal = new bootstrap.Modal(document.getElementById('successModal'));
         successModal.show();
       @endif
-      
+
       @if(session('error') || $errors->any())
         const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
         errorModal.show();

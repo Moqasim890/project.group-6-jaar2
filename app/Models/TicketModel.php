@@ -6,232 +6,295 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-/**
- * TicketModel - Ticket en evenement beheer via stored procedures
- *
- * Dit model beheert tickets en evenement data.
- * Gebruikt stored procedures voor alle CRUD operaties.
- * Tickets worden gekoppeld aan bezoekers en prijzen.
- *
- * @package App\Models
- */
 class TicketModel extends Model
 {
+    // NB: dit model wordt gebruikt als "service" laag; geen $table nodig.
+
+    /** Draait de app op MySQL/MariaDB? */
+    protected static function isMySql(): bool
+    {
+        try {
+            return DB::getDriverName() === 'mysql';
+        } catch (\Throwable $e) {
+            return false;
+        }
+    }
+
     /**
-     * Haal alle evenementen op
-     *
-     * Gebruikt SP_GetAllEvents om alle evenementen op te halen.
-     * Filtert op IsActief=1 in de stored procedure.
-     *
-     * @return array Array van evenement objecten
-     * @throws \Exception Bij database fouten
+     * EVENTS: alle events ophalen (voor ticketscherm)
+     * - MySQL: CALL SP_GetAllEvents()
+     * - SQLite: SELECT ... FROM evenements
      */
     public static function getAllEvents()
     {
         try {
-            Log::info('Calling SP_GetAllEvents');
-            $result = DB::select('CALL SP_GetAllEvents()');
-            Log::info('SP_GetAllEvents completed', ['count' => count($result)]);
-            return $result;
-        } catch (\Exception $e) {
-            Log::error('Error in SP_GetAllEvents: ' . $e->getMessage(), [
-                'exception' => $e
-            ]);
-            throw $e;
-        }
-    }
-
-    /**
-     * Haal een specifiek evenement op via ID
-     *
-     * Gebruikt SP_GetEventByID.
-     * Gebruikt voor detail pagina's en dropdown selecties.
-     *
-     * @param int $id Het evenement ID
-     * @return object|null Evenement object of null als niet gevonden
-     * @throws \Exception Bij database fouten
-     */
-    public static function getEventById($id)
-    {
-        try {
-            Log::info('Calling SP_GetEventByID', ['id' => $id]);
-            $result = DB::selectOne('CALL SP_GetEventByID(?)', [$id]);
-            Log::info('SP_GetEventByID completed', ['found' => !empty($result)]);
-            return $result;
-        } catch (\Exception $e) {
-            Log::error('Error in SP_GetEventByID: ' . $e->getMessage(), [
-                'id' => $id,
-                'exception' => $e
-            ]);
-            throw $e;
-        }
-    }
-
-    /**
-     * Haal een specifiek ticket op via ID
-     *
-     * Gebruikt SP_GetTicketByID.
-     * Joined met prijzen en evenement informatie.
-     * Filtert op IsActief=1 voor prijzen.
-     *
-     * @param int $id Het ticket ID
-     * @return object|null Ticket object met price en event info, of null
-     * @throws \Exception Bij database fouten
-     */
-    public static function getTicketById($id)
-    {
-        try {
-            Log::info('Calling SP_GetTicketByID', ['id' => $id]);
-            $result = DB::selectOne('CALL SP_GetTicketByID(?)', [$id]);
-            Log::info('SP_GetTicketByID completed', ['found' => !empty($result)]);
-            return $result;
-        } catch (\Exception $e) {
-            Log::error('Error in SP_GetTicketByID: ' . $e->getMessage(), [
-                'id' => $id,
-                'exception' => $e
-            ]);
-            throw $e;
-        }
-    }
-
-    /**
-     * Maak een nieuw ticket aan
-     *
-     * Gebruikt SP_CreateTicket.
-     * Verwacht gevalideerde data van controller.
-     * Koppelt ticket aan bezoeker en prijs.
-     *
-     * @param array $data Gevalideerde ticket data met keys:
-     *                    - evenement_id: FK naar evenements
-     *                    - tarief: Prijs bedrag
-     *                    - tijdslot: Tijdslot (08:00:00, 11:00:00, 14:00:00)
-     *                    - datum: Datum in YYYY-MM-DD formaat
-     * @return array Result van stored procedure
-     * @throws \Exception Bij database fouten of validatie fouten
-     */
-    public static function createTicket($data)
-    {
-        try {
-            Log::info('Calling SP_CreateTicket', ['data' => $data]);
-            $result = DB::select('CALL SP_CreateTicket(?, ?, ?, ?)', [
-                $data['evenement_id'],
-                $data['tarief'],
-                $data['tijdslot'],
-                $data['datum']
-            ]);
-            Log::info('SP_CreateTicket completed successfully');
-            return $result;
-        } catch (\Exception $e) {
-            Log::error('Error in SP_CreateTicket: ' . $e->getMessage(), [
-                'data' => $data,
-                'exception' => $e
-            ]);
-            throw $e;
-        }
-    }
-
-    /**
-     * Haal alle tickets voor een evenement op, gegroepeerd per datum
-     *
-     * Gebruikt SP_GetTicketsByEventId.
-     * Joined met prijzen tabel, filtert IsActief=1.
-     * Groepeert resultaten per datum voor betere weergave.
-     *
-     * @param int $eventId Het evenement ID
-     * @return array Associatieve array met datum als key, tickets als value
-     *               Voorbeeld: ['2025-10-16' => [ticket1, ticket2], '2025-10-17' => [...]]
-     * @throws \Exception Bij database fouten
-     */
-    public static function getTicketsByEventId($eventId)
-    {
-        try {
-            Log::info('Calling SP_GetTicketsByEventId', ['eventId' => $eventId]);
-            $tickets = DB::select('CALL SP_GetTicketsByEventId(?)', [$eventId]);
-
-            // Groepeer tickets per datum voor betere structuur
-            $grouped = [];
-            foreach ($tickets as $ticket) {
-                $datum = $ticket->Datum ?? '';
-                if ($datum) {
-                    $grouped[$datum][] = $ticket;
-                }
+            if (self::isMySql()) {
+                Log::info('Calling SP_GetAllEvents (MySQL)');
+                $rows = DB::select('CALL SP_GetAllEvents()');
+                Log::info('SP_GetAllEvents done', ['count' => count($rows)]);
+                return $rows;
             }
 
-            Log::info('SP_GetTicketsByEventId completed', [
-                'eventId' => $eventId,
-                'totalTickets' => count($tickets),
-                'groupedByDates' => count($grouped)
-            ]);
-            return $grouped;
-        } catch (\Exception $e) {
-            Log::error('Error in SP_GetTicketsByEventId: ' . $e->getMessage(), [
-                'eventId' => $eventId,
-                'exception' => $e
-            ]);
+            Log::info('Using QB fallback getAllEvents (SQLite)');
+            return DB::table('evenements')
+                ->select('id', 'Naam', 'Locatie', 'Datum')
+                ->orderByDesc('Datum')
+                ->get();
+
+        } catch (\Throwable $e) {
+            Log::error('getAllEvents failed: '.$e->getMessage(), ['exception' => $e]);
             throw $e;
         }
     }
 
     /**
-     * Update een bestaand ticket
-     *
-     * Gebruikt SP_UpdateTicket.
-     * Verwacht gevalideerde data van controller.
-     *
-     * @param int $id Het ticket ID om te updaten
-     * @param array $data Gevalideerde ticket data met keys:
-     *                    - tarief: Prijs bedrag
-     *                    - tijdslot: Tijdslot (08:00:00, 11:00:00, 14:00:00)
-     *                    - datum: Datum in YYYY-MM-DD formaat
-     *                    - evenement_id: FK naar evenements
-     * @return object Result van stored procedure
-     * @throws \Exception Bij database fouten
+     * PRIJZEN/TICKETS-LIJST voor 1 event (ticket-keuze per event)
+     * - MySQL: CALL SP_GetAllTickets(?)
+     * - SQLite: SELECT prijzen JOIN evenements
      */
-    public static function updateTicket($id, $data)
+    public static function getAllTicketsByEvent(int $eventId)
     {
         try {
-            Log::info('Calling SP_UpdateTicket', ['id' => $id, 'data' => $data]);
-            $result = DB::select('CALL SP_UpdateTicket(?, ?, ?, ?, ?)', [
-                $id,
-                $data['tarief'],
-                $data['tijdslot'],
-                $data['datum'],
-                $data['evenement_id']
-            ]);
-            Log::info('SP_UpdateTicket completed successfully', ['id' => $id]);
-            return $result;
-        } catch (\Exception $e) {
-            Log::error('Error in SP_UpdateTicket: ' . $e->getMessage(), [
-                'id' => $id,
-                'data' => $data,
-                'exception' => $e
-            ]);
+            if (self::isMySql()) {
+                Log::info('Calling SP_GetAllTickets (MySQL)', ['eventId' => $eventId]);
+                return DB::select('CALL SP_GetAllTickets(?)', [$eventId]);
+            }
+
+            Log::info('Using QB fallback getAllTicketsByEvent (SQLite)', ['eventId' => $eventId]);
+            return DB::table('prijzen as p')
+                ->leftJoin('evenements as e', 'p.EvenementId', '=', 'e.id')
+                ->where('p.IsActief', 1)
+                ->where('p.EvenementId', $eventId)
+                ->orderBy('p.Datum')
+                ->orderBy('p.Tijdslot')
+                ->selectRaw('
+                    p.id          as PrijsID,
+                    e.Naam        as EventNaam,
+                    p.Tarief      as TicketPrijs,
+                    p.Tijdslot    as TicketTijdslot,
+                    p.Datum       as TicketDatum,
+                    e.Locatie     as EventLocatie
+                ')
+                ->get();
+
+        } catch (\Throwable $e) {
+            Log::error('getAllTicketsByEvent failed: '.$e->getMessage(), ['eventId' => $eventId, 'exception' => $e]);
             throw $e;
         }
     }
 
     /**
-     * Verwijder een ticket
-     *
-     * Gebruikt SP_DeleteTicket.
-     * LET OP: Dit is een harde delete, geen soft delete.
-     *
-     * @param int $id Het ticket ID om te verwijderen
-     * @return array Result van stored procedure
-     * @throws \Exception Bij database fouten of foreign key constraints
+     * PRIJZEN/TICKETS-LIJST (zonder event filter)
+     * - MySQL: CALL SP_GetAllTickets_NoParam()
+     * - SQLite: SELECT prijzen JOIN evenements
      */
-    public static function deleteTicket($id)
+    public static function getAllTickets()
     {
         try {
-            Log::info('Calling SP_DeleteTicket', ['id' => $id]);
-            $result = DB::select('CALL SP_DeleteTicket(?)', [$id]);
-            Log::info('SP_DeleteTicket completed successfully', ['id' => $id]);
-            return $result;
-        } catch (\Exception $e) {
-            Log::error('Error in SP_DeleteTicket: ' . $e->getMessage(), [
-                'id' => $id,
-                'exception' => $e
+            if (self::isMySql()) {
+                Log::info('Calling SP_GetAllTickets_NoParam (MySQL)');
+                return DB::select('CALL SP_GetAllTickets_NoParam()');
+            }
+
+            Log::info('Using QB fallback getAllTickets (SQLite)');
+            return DB::table('prijzen as p')
+                ->leftJoin('evenements as e', 'p.EvenementId', '=', 'e.id')
+                ->where('p.IsActief', 1)
+                ->orderBy('p.Datum')
+                ->orderBy('p.Tijdslot')
+                ->selectRaw('
+                    p.id          as PrijsID,
+                    e.Naam        as EventNaam,
+                    p.Tarief      as TicketPrijs,
+                    p.Tijdslot    as TicketTijdslot,
+                    p.Datum       as TicketDatum,
+                    e.Locatie     as EventLocatie
+                ')
+                ->get();
+
+        } catch (\Throwable $e) {
+            Log::error('getAllTickets failed: '.$e->getMessage(), ['exception' => $e]);
+            throw $e;
+        }
+    }
+
+    /**
+     * 1 prijs/ticket ophalen (voor details of bewerken)
+     * - MySQL: CALL SP_GetTicketByID(?)
+     * - SQLite: SELECT prijzen JOIN evenements WHERE p.id = ?
+     */
+    public static function getTicketById(int $prijsId)
+    {
+        try {
+            if (self::isMySql()) {
+                Log::info('Calling SP_GetTicketByID (MySQL)', ['prijsId' => $prijsId]);
+                $rows = DB::select('CALL SP_GetTicketByID(?)', [$prijsId]);
+                return $rows[0] ?? null;
+            }
+
+            Log::info('Using QB fallback getTicketById (SQLite)', ['prijsId' => $prijsId]);
+            return DB::table('prijzen as p')
+                ->leftJoin('evenements as e', 'p.EvenementId', '=', 'e.id')
+                ->where('p.id', $prijsId)
+                ->selectRaw('
+                    p.id          as PrijsID,
+                    e.Naam        as EventNaam,
+                    p.Tarief      as TicketPrijs,
+                    p.Tijdslot    as TicketTijdslot,
+                    p.Datum       as TicketDatum,
+                    e.Locatie     as EventLocatie
+                ')
+                ->first();
+
+        } catch (\Throwable $e) {
+            Log::error('getTicketById failed: '.$e->getMessage(), ['prijsId' => $prijsId, 'exception' => $e]);
+            throw $e;
+        }
+    }
+
+    /**
+     * Aanmaken van een 'ticket' record in prijzen (admin create prijs)
+     * - MySQL: CALL SP_CreateTicket(...)
+     * - SQLite: insert in prijzen (actief=1)
+     */
+    public static function createTicket(int $eventId, float $prijs, string $tijdslot, string $datum)
+    {
+        try {
+            if (self::isMySql()) {
+                Log::info('Calling SP_CreateTicket (MySQL)', compact('eventId','prijs','tijdslot','datum'));
+                $rows = DB::select('CALL SP_CreateTicket(?, ?, ?, ?)', [$eventId, $prijs, $tijdslot, $datum]);
+                return $rows[0] ?? (object)['Affected' => 0];
+            }
+
+            Log::info('Using QB fallback createTicket (SQLite)', compact('eventId','prijs','tijdslot','datum'));
+            $affected = DB::table('prijzen')->insertGetId([
+                'EvenementId'    => $eventId,
+                'Tarief'         => $prijs,
+                'Tijdslot'       => $tijdslot,
+                'Datum'          => $datum,
+                'IsActief'       => 1,
+                'DatumAangemaakt'=> now(),
+                'DatumGewijzigd' => now(),
             ]);
+
+            return (object)['Affected' => $affected ? 1 : 0];
+
+        } catch (\Throwable $e) {
+            Log::error('createTicket failed: '.$e->getMessage(), ['eventId' => $eventId, 'exception' => $e]);
+            throw $e;
+        }
+    }
+
+    /**
+     * Updaten van prijs 'ticket' rij in prijzen
+     * - MySQL: CALL SP_UpdateTicket(...)
+     * - SQLite: update prijzen
+     */
+    public static function updateTicket(int $prijsId, float $prijs, string $tijdslot, string $datum, int $eventId)
+    {
+        try {
+            if (self::isMySql()) {
+                Log::info('Calling SP_UpdateTicket (MySQL)', compact('prijsId','prijs','tijdslot','datum','eventId'));
+                $row = DB::selectOne('CALL SP_UpdateTicket(?, ?, ?, ?, ?)', [$prijsId, $prijs, $tijdslot, $datum, $eventId]);
+                return $row ?? (object)['Affected' => 0];
+            }
+
+            Log::info('Using QB fallback updateTicket (SQLite)', compact('prijsId','prijs','tijdslot','datum','eventId'));
+            $affected = DB::table('prijzen')
+                ->where('id', $prijsId)
+                ->update([
+                    'EvenementId'    => $eventId,
+                    'Tarief'         => $prijs,
+                    'Tijdslot'       => $tijdslot,
+                    'Datum'          => $datum,
+                    'DatumGewijzigd' => now(),
+                ]);
+
+            return (object)['Affected' => (int)$affected];
+
+        } catch (\Throwable $e) {
+            Log::error('updateTicket failed: '.$e->getMessage(), ['prijsId' => $prijsId, 'exception' => $e]);
+            throw $e;
+        }
+    }
+
+    /**
+     * Verwijderen van prijs 'ticket' (hard delete, overeenkomstig je SP_DeleteTicket)
+     * - MySQL: CALL SP_DeleteTicket(?)
+     * - SQLite: DELETE FROM prijzen WHERE id = ?
+     */
+    public static function deleteTicket(int $id)
+    {
+        try {
+            if (self::isMySql()) {
+                Log::info('Calling SP_DeleteTicket (MySQL)', ['id' => $id]);
+                $row = DB::selectOne('CALL SP_DeleteTicket(?)', [$id]); // verwacht { Affected: 0|1 }
+                return $row ?? (object)['Affected' => 0];
+            }
+
+            Log::info('Using QB fallback deleteTicket (SQLite)', ['id' => $id]);
+            $affected = DB::table('prijzen')->where('id', $id)->delete();
+            return (object)['Affected' => (int)$affected];
+
+        } catch (\Throwable $e) {
+            Log::error('deleteTicket failed: '.$e->getMessage(), ['id' => $id, 'exception' => $e]);
+            throw $e;
+        }
+    }
+
+    /**
+     * Kopen van tickets (end-user flow) -> INSERT in tickets
+     * - MySQL: CALL SP_KopenTicket(...)
+     * - SQLite: direct insert in tickets
+     */
+    public static function kopenTicket(int $bezoekerId, int $evenementId, int $prijsId, int $aantalTickets, string $datum)
+    {
+        try {
+            if (self::isMySql()) {
+                Log::info('Calling SP_KopenTicket (MySQL)', compact('bezoekerId','evenementId','prijsId','aantalTickets','datum'));
+                $rows = DB::select('CALL SP_KopenTicket(?, ?, ?, ?, ?)', [$bezoekerId, $evenementId, $prijsId, $aantalTickets, $datum]);
+                return $rows[0] ?? (object)['Affected' => 0];
+            }
+
+            Log::info('Using QB fallback kopenTicket (SQLite)', compact('bezoekerId','evenementId','prijsId','aantalTickets','datum'));
+            $affected = DB::table('tickets')->insert([
+                'BezoekerId' => $bezoekerId,
+                'EvenementId'=> $evenementId,
+                'PrijsId'    => $prijsId,
+                'AantalTickets' => $aantalTickets,
+                'Datum'      => $datum,
+            ]);
+
+            return (object)['Affected' => $affected ? 1 : 0];
+
+        } catch (\Throwable $e) {
+            Log::error('kopenTicket failed: '.$e->getMessage(), ['bezoekerId' => $bezoekerId, 'exception' => $e]);
+            throw $e;
+        }
+    }
+
+    /**
+     * Tickets ophalen voor gebruiker+datum
+     * - MySQL: CALL SP_Ticketophalen(?, ?)
+     * - SQLite: SELECT uit tickets
+     */
+    public static function ticketOphalen(int $bezoekerId, string $datum)
+    {
+        try {
+            if (self::isMySql()) {
+                Log::info('Calling SP_Ticketophalen (MySQL)', compact('bezoekerId','datum'));
+                return DB::select('CALL SP_Ticketophalen(?, ?)', [$bezoekerId, $datum]);
+            }
+
+            Log::info('Using QB fallback ticketOphalen (SQLite)', compact('bezoekerId','datum'));
+            return DB::table('tickets')
+                ->where('BezoekerId', $bezoekerId)
+                ->where('Datum', $datum)
+                ->select('BezoekerId', 'EvenementId', 'PrijsId', 'AantalTickets', 'Datum')
+                ->get();
+
+        } catch (\Throwable $e) {
+            Log::error('ticketOphalen failed: '.$e->getMessage(), ['bezoekerId' => $bezoekerId, 'exception' => $e]);
             throw $e;
         }
     }
