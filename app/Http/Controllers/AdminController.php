@@ -115,7 +115,7 @@ class AdminController extends Controller
 
             if ($res->Affected > 0) {
                 return redirect()->route('admin.prijzen.index')
-                    ->with('success', 'Ticket prijs succesvol bijgewerkt!');
+                    ->with('success', 'Ticket is succesvol verwijderd');
             }
 
             return redirect()->route('admin.prijzen.index')
