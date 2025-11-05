@@ -98,6 +98,7 @@
       </div>
 
       {{-- Auto-open modal script --}}
+      @push('scripts')
       <script>
         document.addEventListener('DOMContentLoaded', function() {
           var successModal = new bootstrap.Modal(document.getElementById('successModal'), {
@@ -114,6 +115,7 @@
           // });
         });
       </script>
+      @endpush
     @endif
   </div>
 </x-layout>

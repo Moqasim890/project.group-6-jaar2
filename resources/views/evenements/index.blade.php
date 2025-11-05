@@ -43,27 +43,6 @@
   <section class="py-10">
     <div class="mx-auto max-w-7xl px-6">
 
-      {{-- Succesmelding --}}
-      @if(session('ok'))
-        <div class="alert alert-success mb-4">{{ session('ok') }}</div>
-      @endif
-
-      {{-- Foutmelding --}}
-      @if(session('error'))
-        <div class="alert alert-danger mb-4">{{ session('error') }}</div>
-      @endif
-
-      {{-- Validatiefouten --}}
-      @if($errors->any())
-        <div class="alert alert-danger mb-4">
-          <ul class="mb-0">
-            @foreach($errors->all() as $error)
-              <li>{{ $error }}</li>
-            @endforeach
-          </ul>
-        </div>
-      @endif
-
       @if($events->count())
         <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           @foreach($events as $e)
@@ -146,4 +125,74 @@
       @endif
     </div>
   </section>
+
+  <!-- Success Modal -->
+  @if(session('ok'))
+  <div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-success text-white">
+          <h5 class="modal-title"><i class="bi bi-check-circle-fill me-2"></i>Gelukt!</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body text-center py-4">
+          <i class="bi bi-check-circle text-success" style="font-size: 4rem;"></i>
+          <h4 class="mt-3">{{ session('ok') }}</h4>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-success" data-bs-dismiss="modal">OK</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  @endif
+
+  <!-- Error Modal -->
+  @if(session('error') || $errors->any())
+  <div class="modal fade" id="errorModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-danger text-white">
+          <h5 class="modal-title"><i class="bi bi-exclamation-triangle-fill me-2"></i>Fout</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body text-center py-4">
+          <i class="bi bi-x-circle text-danger" style="font-size: 4rem;"></i>
+          <h4 class="mt-3">Er is een fout opgetreden</h4>
+          <div class="text-muted">
+            @if(session('error'))
+              <p>{{ session('error') }}</p>
+            @endif
+            @if($errors->any())
+              <ul class="list-unstyled mb-0">
+                @foreach($errors->all() as $error)
+                  <li>{{ $error }}</li>
+                @endforeach
+              </ul>
+            @endif
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">OK</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  @endif
+
+  @push('scripts')
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      @if(session('ok'))
+        const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+        successModal.show();
+      @endif
+      
+      @if(session('error') || $errors->any())
+        const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+        errorModal.show();
+      @endif
+    });
+  </script>
+  @endpush
 </x-layout>

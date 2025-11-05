@@ -129,7 +129,7 @@ class PrijsModel extends Model
      * @param float $tarief Prijs in euros (min 0.01)
      * @param int $isActief Status: 1=actief, 0=inactief
      * @param string $opmerking Optionele opmerking
-     * @return int Aantal affected rows (0 of 1)
+     * @return object Aantal affected rows (0 of 1)
      * @throws \Exception Bij database fouten of duplicate entries
      */
     public static function updatePrijs($id, $evenementId, $datum, $tijdslot, $tarief, $isActief, $opmerking = '')
@@ -143,7 +143,7 @@ class PrijsModel extends Model
                 'tarief' => $tarief,
                 'isActief' => $isActief
             ]);
-            $results = DB::select('CALL SP_UpdatePrijs(?, ?, ?, ?, ?, ?, ?)', [
+            $result = DB::selectOne('CALL SP_UpdatePrijs(?, ?, ?, ?, ?, ?, ?)', [
                 $id,
                 $evenementId,
                 $datum,
@@ -152,9 +152,8 @@ class PrijsModel extends Model
                 $isActief,
                 $opmerking
             ]);
-            $affected = !empty($results) ? $results[0]->Affected : 0;
-            Log::info('SP_UpdatePrijs completed', ['id' => $id, 'affected' => $affected]);
-            return $affected;
+            Log::info('SP_UpdatePrijs completed', ['id' => $id, 'qeury' => $result]);
+            return $result;
         } catch (\Exception $e) {
             Log::error('Error in SP_UpdatePrijs: ' . $e->getMessage(), [
                 'id' => $id,

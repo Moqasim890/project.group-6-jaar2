@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\PrijsModel;
 use App\Models\EvenementModel;
+use Illuminate\Support\Facades\Log;
+use function PHPUnit\Framework\isNull;
 
 class AdminController extends Controller
 {
@@ -29,11 +31,12 @@ class AdminController extends Controller
             'evenement_id' => 'required|integer',
             'datum' => 'required|date|after_or_equal:today',
             'tijdslot' => 'required',
-            'tarief' => 'required|numeric|min:0.01',
+            'tarief' => 'required|numeric|min:0.01|max:999.99',
             'opmerking' => 'nullable|string'
         ], [
             'datum.after_or_equal' => 'De datum mag niet in het verleden liggen.',
-            'tarief.min' => 'Het tarief moet minimaal €0.01 zijn.'
+            'tarief.min' => 'Het tarief moet minimaal €0.01 zijn.',
+            'tarief.max' => 'Het tarief moet maximaal 999.99 zijn'
         ]);
 
         // Check for duplicates before calling stored procedure
@@ -61,15 +64,8 @@ class AdminController extends Controller
             return redirect()->route('admin.prijzen.index')
                 ->with('success', 'Ticket prijs succesvol aangemaakt!');
         } catch (\Exception $e) {
-            // Handle database errors (including SIGNAL from stored procedure)
-            if (str_contains($e->getMessage(), 'bestaat al een prijs')) {
-                return back()
-                    ->withErrors(['tijdslot' => 'Er bestaat al een prijs voor dit evenement op deze datum en dit tijdslot.'])
-                    ->withInput();
-            }
-
             return back()
-                ->withErrors(['error' => 'Er is een fout opgetreden bij het aanmaken van de prijs.'])
+                ->withErrors(['error' => $e->getMessage()])
                 ->withInput();
         }
     }
@@ -95,55 +91,38 @@ class AdminController extends Controller
             'evenement_id' => 'required|integer',
             'datum' => 'required|date|after_or_equal:today',
             'tijdslot' => 'required',
-            'tarief' => 'required|numeric|min:0.01',
+            'tarief' => 'required|numeric|min:0.01|max:999.99',
             'is_actief' => 'required|boolean',
             'opmerking' => 'nullable|string'
         ], [
             'datum.after_or_equal' => 'De datum mag niet in het verleden liggen.',
-            'tarief.min' => 'Het tarief moet minimaal €0.01 zijn.'
+            'tarief.min' => 'Het tarief moet minimaal €0.01 zijn.',
+            'tarief.max' => 'Het tarief moet maximaal 999.99 zijn'
         ]);
 
-        // Check for duplicates (excluding current record)
-        $duplicate = \Illuminate\Support\Facades\DB::selectOne(
-            'SELECT COUNT(*) as count FROM prijzen
-             WHERE EvenementId = ? AND Datum = ? AND Tijdslot = ? AND IsActief = 1 AND id != ?',
-            [$validated['evenement_id'], $validated['datum'], $validated['tijdslot'], $id]
-        );
-
-        if ($duplicate->count > 0) {
-            return back()
-                ->withErrors(['tijdslot' => 'Er bestaat al een prijs voor dit evenement op deze datum en dit tijdslot.'])
-                ->withInput();
-        }
-
         try {
-            $affected = PrijsModel::updatePrijs(
+            $res = PrijsModel::updatePrijs(
                 $id,
                 $validated['evenement_id'],
                 $validated['datum'],
                 $validated['tijdslot'],
                 $validated['tarief'],
                 $validated['is_actief'],
-                $validated['opmerking']
+                $validated['opmerking'] ?? ''
             );
 
-            if ($affected > 0) {
+            // return dd($res);
+
+            if ($res->Affected > 0) {
                 return redirect()->route('admin.prijzen.index')
                     ->with('success', 'Ticket prijs succesvol bijgewerkt!');
             }
 
             return redirect()->route('admin.prijzen.index')
-                ->with('error', 'Ticket prijs kon niet worden bijgewerkt!');
+                ->with('error', $res->message);
         } catch (\Exception $e) {
-            // Handle database errors (including SIGNAL from stored procedure)
-            if (str_contains($e->getMessage(), 'bestaat al een prijs')) {
-                return back()
-                    ->withErrors(['tijdslot' => 'Er bestaat al een prijs voor dit evenement op deze datum en dit tijdslot.'])
-                    ->withInput();
-            }
-
             return back()
-                ->withErrors(['error' => 'Er is een fout opgetreden bij het bijwerken van de prijs.'])
+                ->withErrors(['error' => $e->getMessage()])
                 ->withInput();
         }
     }

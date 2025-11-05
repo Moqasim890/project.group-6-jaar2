@@ -138,6 +138,12 @@ BEGIN
         SET MESSAGE_TEXT = 'Er bestaat al een prijs voor dit evenement op deze datum en dit tijdslot.';
     END IF;
 
+    IF p_tarief < 0.01 OR p_tarief > 999.99 THEN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = 'Het tarief moet tussen 0.01 en 999.99 euro liggen.';
+    END IF;
+
+
     -- Insert new prijs
     INSERT INTO prijzen (EvenementId, Datum, Tijdslot, Tarief, IsActief, Opmerking)
     VALUES (p_evenementId, p_datum, p_tijdslot, p_tarief, 1, p_opmerking);
@@ -157,7 +163,16 @@ CREATE PROCEDURE SP_UpdatePrijs(
 BEGIN
     DECLARE v_duplicate_count INT;
 
-    -- Check if duplicate exists (excluding current record)
+    IF NOT EXISTS (
+        SELECT 1
+        FROM evenements
+        WHERE id = p_evenementId
+        AND IsActief = 1
+    ) THEN
+        SELECT 'Dit ticket kan niet worden gewijzigd omdat het evenement niet actief is.' AS message
+        ,0 AS Affected;
+    END IF;
+
     SELECT COUNT(*) INTO v_duplicate_count
     FROM prijzen
     WHERE EvenementId = p_evenementId
@@ -166,24 +181,33 @@ BEGIN
       AND IsActief = 1
       AND id != p_id;
 
-    -- If duplicate exists, signal error
     IF v_duplicate_count > 0 THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Er bestaat al een prijs voor dit evenement op deze datum en dit tijdslot.';
+        SELECT 'Er bestaat al een actieve prijs voor dit evenement op deze datum en tijdslot.' AS message
+        ,0 AS Affected;
     END IF;
 
-    -- Update prijs
-    UPDATE prijzen
-    SET
-        EvenementId = p_evenementId,
-        Datum = p_datum,
-        Tijdslot = p_tijdslot,
-        Tarief = p_tarief,
-        IsActief = p_isActief,
-        Opmerking = p_opmerking,
-        DatumGewijzigd = NOW()
-    WHERE id = p_id;
+    IF p_tarief < 0.01 OR p_tarief > 999.99 THEN
+    SELECT 'Het tarief moet tussen 0.01 en 999.99 euro liggen.' AS message,
+    0 AS Affected;
+    END IF;
 
+
+    -- Update via JOIN, zodat alleen gekoppeld wordt aan actief event
+    UPDATE prijzen p
+    JOIN evenements e
+        ON e.id = p_evenementId
+       AND e.IsActief = 1
+    SET
+        p.EvenementId = p_evenementId,
+        p.Datum       = p_datum,
+        p.Tijdslot    = p_tijdslot,
+        p.Tarief      = p_tarief,
+        p.IsActief    = p_isActief,
+        p.Opmerking   = p_opmerking,
+        p.DatumGewijzigd = NOW()
+    WHERE p.id = p_id;
+
+    -- Aantal gewijzigde rijen teruggeven
     SELECT ROW_COUNT() AS Affected;
 END $$
 
@@ -373,19 +397,21 @@ BEGIN
 END $$
 
 CREATE PROCEDURE SP_UpdateTicket (
-    IN id INT,
+    IN prijsid INT,
     IN prijs DECIMAL(10,2),
     IN tijdslot TIME,
     IN datum DATE,
     IN eventId INT
 )
 BEGIN
-    UPDATE prijzen
-    SET Tarief = prijs,
-        Tijdslot = tijdslot,
-        Datum = datum,
-        EvenementId = eventId
-    WHERE id = id;
+    UPDATE prijzen p
+    JOIN evenement e ON e.Id = eventId
+    SET p.Tarief = prijs,
+        p.Tijdslot = tijdslot,
+        p.Datum = datum,
+        p.EvenementId = eventId
+    WHERE p.Id = prijsId
+      AND e.IsActief = 1;
 
     SELECT ROW_COUNT() AS Affected;
 END $$

@@ -65,6 +65,7 @@
                                value="{{ old('tarief', $prijs->Tarief) }}"
                                step="0.01"
                                min="0.01"
+                               max="999.99"
                                required>
                         @error('tarief')
                             <div class="invalid-feedback">{{ $message }}</div>
@@ -101,6 +102,25 @@
         </div>
     </div>
 
+    <!-- Success Modal -->
+    <div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title"><i class="bi bi-check-circle-fill me-2"></i>Gelukt!</h5>
+                </div>
+                <div class="modal-body text-center py-4">
+                    <i class="bi bi-check-circle text-success" style="font-size: 4rem;"></i>
+                    <h4 class="mt-3">De ticket prijs is succesvol bijgewerkt!</h4>
+                    <p class="text-muted">De wijzigingen zijn opgeslagen in het systeem.</p>
+                </div>
+                <div class="modal-footer">
+                    <a href="{{ route('admin.prijzen.index') }}" class="btn btn-success">OK</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Error Modal (Duplicate) -->
     <div class="modal fade" id="errorModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
@@ -110,8 +130,16 @@
                 </div>
                 <div class="modal-body text-center py-4">
                     <i class="bi bi-x-circle text-danger" style="font-size: 4rem;"></i>
-                    <h4 class="mt-3">De ticket bestaat al!</h4>
-                    <p class="text-muted">Er bestaat al een prijs voor dit evenement op deze datum en dit tijdslot.</p>
+                    <h4 class="mt-3">Er is een fout opgetreden</h4>
+                    <div class="text-muted">
+                        @if($errors->any())
+                            <ul class="list-unstyled mb-0">
+                                @foreach($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        @endif
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">OK</button>
@@ -122,13 +150,13 @@
 
     @push('scripts')
     <script>
-        // Show error modal if there's a tijdslot error (duplicate)
-        @error('tijdslot')
-            document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function() {
+            // Show error modal if there are validation errors
+            @if($errors->any())
                 const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
                 errorModal.show();
-            });
-        @enderror
+            @endif
+        });
     </script>
     @endpush
 </x-layout>

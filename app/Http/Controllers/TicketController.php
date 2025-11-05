@@ -78,9 +78,14 @@ class TicketController extends Controller
             'datum' => 'required|date'
         ]);
 
-        TicketModel::updateTicket($id, $validated);
+        $res = TicketModel::updateTicket($id, $validated);
+        if($res->effected <= 0){
+            echo 'error';
+            return view('Tickets.edit', ['ticket'=> $validated,])->with('error', 'Dit ticket kan niet worden gewijzigd omdat het evenement niet actief is.');
+        }
+        
         return redirect()->route('Tickets.show', $id)
-            ->with('success', 'Ticket succesvol bijgewerkt!');
+            ->with('success', 'Uw wijzigingen zijn succesvol opgeslagen!');
     }
 
     /**

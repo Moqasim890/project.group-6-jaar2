@@ -184,7 +184,7 @@ class TicketModel extends Model
      *                    - tijdslot: Tijdslot (08:00:00, 11:00:00, 14:00:00)
      *                    - datum: Datum in YYYY-MM-DD formaat
      *                    - evenement_id: FK naar evenements
-     * @return array Result van stored procedure
+     * @return object Result van stored procedure
      * @throws \Exception Bij database fouten
      */
     public static function updateTicket($id, $data)

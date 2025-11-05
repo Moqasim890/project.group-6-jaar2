@@ -98,6 +98,7 @@
             </table>
         </form>
 
+        @push('scripts')
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 const inputs = document.querySelectorAll('input[type="number"][name^="aantal"]');
@@ -117,9 +118,7 @@
 
                 updateTotal();
             });
-
-
         </script>
+        @endpush
     </div>
 </x-layout>
-

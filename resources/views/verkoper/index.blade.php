@@ -7,13 +7,7 @@
                 <h1 class="page-titel">Alle verkopers</h1>
                 <p class="page-tekst">meer info over verkopers is hier te vinden</p>
                 <a href="/verkoper/create" id="add-verkoper">Verkoper Toevoegen +</a>
-                @if (session('success'))
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        {{ session('success') }}
-                        <button type="button" class="btn-close" aria-label="sluiten" data-bs-dismiss="alert"></button>
-                    </div>
-                    <meta http-equiv="refresh" content="3;url={{ route('verkoper.index') }}">
-                @endif
+                
                 <table class="table">
                     <thead>
                         <th scope="col">Naam</th>
@@ -47,4 +41,36 @@
             </div>
         </div>
     </div>
+
+    <!-- Success Modal -->
+    @if(session('success'))
+    <div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title"><i class="bi bi-check-circle-fill me-2"></i>Gelukt!</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center py-4">
+                    <i class="bi bi-check-circle text-success" style="font-size: 4rem;"></i>
+                    <h4 class="mt-3">{{ session('success') }}</h4>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" data-bs-dismiss="modal">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+
+    @push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            @if(session('success'))
+                const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+                successModal.show();
+            @endif
+        });
+    </script>
+    @endpush
 </x-layout>
