@@ -1,26 +1,79 @@
+{{-- 
+    Admin Prijs Bewerken Pagina
+    
+    Formulier voor het bewerken van een bestaande ticket prijs.
+    Lijkt op create.blade.php maar bevat extra velden en functionaliteit.
+    
+    Functionaliteit:
+    - Pre-filled formulier met bestaande prijs gegevens
+    - Evenement selectie dropdown (verplicht)
+    - Datum picker met minimum datum van vandaag (verplicht)
+    - Tijdslot selectie: 08:00, 11:00, 14:00 (verplicht)
+    - Tarief invoer met decimalen (verplicht, min €0.01, max €999.99)
+    - Status dropdown: Actief/Inactief (verplicht, uniek voor edit)
+    - Optioneel opmerking tekstveld
+    - Client-side en server-side validatie
+    - Error modal toont validatiefouten
+    - Success modal bij succesvol bijwerken (via session data)
+    - Behoud van oude invoer bij validatiefouten
+    - Annuleer knop terug naar overzicht
+    
+    Data vereist:
+    - $prijs: Prijs object met huidige waarden:
+        * id: Prijs ID voor update route
+        * EvenementId: Geselecteerd evenement
+        * Datum: Huidige datum (YYYY-MM-DD)
+        * Tijdslot: Huidig tijdslot (HH:MM:SS)
+        * Tarief: Huidig tarief
+        * IsActief: Status (1=actief, 0=inactief)
+        * Opmerking: Huidige opmerking
+    - $evenements: Collectie van evenement objecten voor dropdown
+    
+    Validatie regels (client & server):
+    - evenement_id: Verplicht, moet integer zijn
+    - datum: Verplicht, moet datum zijn, niet in verleden
+    - tijdslot: Verplicht, moet een van drie opties zijn
+    - tarief: Verplicht, numeriek, tussen 0.01 en 999.99
+    - is_actief: Verplicht, boolean (0 of 1)
+    - opmerking: Optioneel, string
+    
+    Routes gebruikt:
+    - admin.prijzen.index: Terug naar overzicht
+    - admin.prijzen.update: PUT actie voor bijwerken prijs (parameter: id)
+    
+    Session/Error data:
+    - errors: Laravel validatie foutmeldingen
+    - old(): Behouden invoer bij validatiefouten (fallback naar $prijs waarden)
+--}}
 <x-layout>
     <div class="container mt-5">
+        {{-- Header sectie met titel en terug knop --}}
         <div class="row mb-4">
             <div class="col">
                 <h1>Prijs Bewerken</h1>
             </div>
             <div class="col text-end">
+                {{-- Terug naar overzicht knop --}}
                 <a href="{{ route('admin.prijzen.index') }}" class="btn btn-secondary">
                     <i class="bi bi-arrow-left me-1"></i> Terug naar Overzicht
                 </a>
             </div>
         </div>
 
+        {{-- Formulier card --}}
         <div class="card">
             <div class="card-body">
+                {{-- PUT formulier naar update route met prijs ID --}}
                 <form action="{{ route('admin.prijzen.update', $prijs->id) }}" method="POST">
                     @csrf
                     @method('PUT')
 
+                    {{-- Evenement selectie dropdown met pre-selected waarde --}}
                     <div class="mb-3">
                         <label for="evenement_id" class="form-label">Evenement *</label>
                         <select name="evenement_id" id="evenement_id" class="form-select @error('evenement_id') is-invalid @enderror" required>
                             <option value="">Selecteer een evenement</option>
+                            {{-- Loop door evenementen, selecteer huidige of oude waarde --}}
                             @foreach($evenements as $evenement)
                                 <option value="{{ $evenement->id }}"
                                     {{ (old('evenement_id', $prijs->EvenementId) == $evenement->id) ? 'selected' : '' }}>
@@ -28,11 +81,13 @@
                                 </option>
                             @endforeach
                         </select>
+                        {{-- Toon evenement_id validatie fouten --}}
                         @error('evenement_id')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
 
+                    {{-- Datum picker veld met pre-filled waarde --}}
                     <div class="mb-3">
                         <label for="datum" class="form-label">Datum *</label>
                         <input type="date" name="datum" id="datum"
@@ -40,11 +95,14 @@
                                value="{{ old('datum', $prijs->Datum) }}"
                                min="{{ date('Y-m-d') }}"
                                required>
+                        {{-- Toon datum validatie fouten --}}
                         @error('datum')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
 
+                    {{-- Tijdslot selectie dropdown met pre-selected waarde --}}
+                    {{-- Substr wordt gebruikt om HH:MM:SS naar HH:MM te converteren voor vergelijking --}}
                     <div class="mb-3">
                         <label for="tijdslot" class="form-label">Tijdslot *</label>
                         <select name="tijdslot" id="tijdslot" class="form-select @error('tijdslot') is-invalid @enderror" required>
@@ -53,11 +111,13 @@
                             <option value="11:00:00" {{ old('tijdslot', substr($prijs->Tijdslot, 0, 5)) == '11:00' ? 'selected' : '' }}>11:00</option>
                             <option value="14:00:00" {{ old('tijdslot', substr($prijs->Tijdslot, 0, 5)) == '14:00' ? 'selected' : '' }}>14:00</option>
                         </select>
+                        {{-- Toon tijdslot validatie fouten (inclusief duplicate check) --}}
                         @error('tijdslot')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
 
+                    {{-- Tarief invoerveld met decimalen en pre-filled waarde --}}
                     <div class="mb-3">
                         <label for="tarief" class="form-label">Tarief (€) *</label>
                         <input type="number" name="tarief" id="tarief"
@@ -67,30 +127,37 @@
                                min="0.01"
                                max="999.99"
                                required>
+                        {{-- Toon tarief validatie fouten --}}
                         @error('tarief')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
 
+                    {{-- Status selectie dropdown - UNIEK VOOR EDIT --}}
+                    {{-- Admin kan prijs deactiveren zonder te verwijderen --}}
                     <div class="mb-3">
                         <label for="is_actief" class="form-label">Status *</label>
                         <select name="is_actief" id="is_actief" class="form-select @error('is_actief') is-invalid @enderror" required>
                             <option value="1" {{ old('is_actief', $prijs->IsActief) == 1 ? 'selected' : '' }}>Actief</option>
                             <option value="0" {{ old('is_actief', $prijs->IsActief) == 0 ? 'selected' : '' }}>Inactief</option>
                         </select>
+                        {{-- Toon is_actief validatie fouten --}}
                         @error('is_actief')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
 
+                    {{-- Optioneel opmerking tekstveld met pre-filled waarde --}}
                     <div class="mb-3">
                         <label for="opmerking" class="form-label">Opmerking</label>
                         <textarea name="opmerking" id="opmerking" class="form-control @error('opmerking') is-invalid @enderror" rows="3">{{ old('opmerking', $prijs->Opmerking) }}</textarea>
+                        {{-- Toon opmerking validatie fouten --}}
                         @error('opmerking')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
 
+                    {{-- Actie knoppen: Opslaan en Annuleren --}}
                     <div class="d-flex justify-content-between">
                         <button type="submit" class="btn btn-primary">
                             <i class="bi bi-save me-1"></i> Opslaan
@@ -102,7 +169,7 @@
         </div>
     </div>
 
-    <!-- Success Modal -->
+    {{-- Success Modal - Getoond na succesvol bijwerken via JavaScript --}}
     <div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -121,7 +188,7 @@
         </div>
     </div>
 
-    <!-- Error Modal (Duplicate) -->
+    {{-- Error Modal - Getoond bij validatiefouten via JavaScript --}}
     <div class="modal fade" id="errorModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -132,6 +199,7 @@
                     <i class="bi bi-x-circle text-danger" style="font-size: 4rem;"></i>
                     <h4 class="mt-3">Er is een fout opgetreden</h4>
                     <div class="text-muted">
+                        {{-- Toon alle validatiefouten in lijst --}}
                         @if($errors->any())
                             <ul class="list-unstyled mb-0">
                                 @foreach($errors->all() as $error)
@@ -150,8 +218,9 @@
 
     @push('scripts')
     <script>
+        // JavaScript om error modal automatisch te tonen bij validatiefouten
         document.addEventListener('DOMContentLoaded', function() {
-            // Show error modal if there are validation errors
+            // Controleer of er validatiefouten zijn via Blade directive
             @if($errors->any())
                 const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
                 errorModal.show();

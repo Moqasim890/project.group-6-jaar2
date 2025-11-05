@@ -1,26 +1,69 @@
+{{-- 
+    Admin Nieuwe Prijs Aanmaken Pagina
+    
+    Formulier voor het toevoegen van een nieuwe ticket prijs aan een evenement.
+    
+    Functionaliteit:
+    - Evenement selectie dropdown (verplicht)
+    - Datum picker met minimum datum van vandaag (verplicht)
+    - Tijdslot selectie: 08:00, 11:00, 14:00 (verplicht)
+    - Tarief invoer met decimalen (verplicht, min €0.01, max €999.99)
+    - Optioneel opmerking tekstveld
+    - Client-side en server-side validatie
+    - Error modal toont validatiefouten
+    - Success modal bij succesvol opslaan (via session data)
+    - Behoud van oude invoer bij validatiefouten
+    - Annuleer knop terug naar overzicht
+    
+    Data vereist:
+    - $evenements: Collectie van evenement objecten met eigenschappen:
+        * id: Evenement ID voor dropdown value
+        * Naam: Evenement naam voor dropdown weergave
+    
+    Validatie regels (client & server):
+    - evenement_id: Verplicht, moet integer zijn
+    - datum: Verplicht, moet datum zijn, niet in verleden
+    - tijdslot: Verplicht, moet een van drie opties zijn
+    - tarief: Verplicht, numeriek, tussen 0.01 en 999.99
+    - opmerking: Optioneel, string
+    
+    Routes gebruikt:
+    - admin.prijzen.index: Terug naar overzicht
+    - admin.prijzen.store: POST actie voor opslaan nieuwe prijs
+    
+    Session/Error data:
+    - errors: Laravel validatie foutmeldingen
+    - old(): Behouden invoer bij validatiefouten
+--}}
 <x-layout>
     <div class="container mt-5">
+        {{-- Header sectie met titel en terug knop --}}
         <div class="row mb-4">
             <div class="col">
                 <h1>Nieuwe Prijs Toevoegen</h1>
             </div>
             <div class="col text-end">
+                {{-- Terug naar overzicht knop --}}
                 <a href="{{ route('admin.prijzen.index') }}" class="btn btn-secondary">
                     <i class="bi bi-arrow-left me-1"></i> Terug naar Overzicht
                 </a>
             </div>
         </div>
 
+        {{-- Formulier card --}}
         <div class="card">
             <div class="card-body">
+                {{-- POST formulier naar store route --}}
                 <form action="{{ route('admin.prijzen.store') }}" method="POST" id="prijsForm">
                     @csrf
 
+                    {{-- Evenement selectie dropdown --}}
                     <div class="mb-3">
                         <label for="evenement_id" class="form-label">Evenement *</label>
                         <select name="evenement_id" id="evenement_id"
                             class="form-select @error('evenement_id') is-invalid @enderror" required>
                             <option value="">Selecteer een evenement</option>
+                            {{-- Loop door alle evenementen, behoud selectie bij validatiefout --}}
                             @foreach ($evenements as $evenement)
                                 <option value="{{ $evenement->id }}"
                                     {{ old('evenement_id') == $evenement->id ? 'selected' : '' }}>
@@ -28,21 +71,25 @@
                                 </option>
                             @endforeach
                         </select>
+                        {{-- Toon evenement_id validatie fouten --}}
                         @error('evenement_id')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
 
+                    {{-- Datum picker veld --}}
                     <div class="mb-3">
                         <label for="datum" class="form-label">Datum *</label>
                         <input type="date" name="datum" id="datum"
                             class="form-control @error('datum') is-invalid @enderror" value="{{ old('datum') }}"
                             min="{{ date('Y-m-d') }}" required>
+                        {{-- Toon datum validatie fouten --}}
                         @error('datum')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
 
+                    {{-- Tijdslot selectie dropdown (3 vaste opties) --}}
                     <div class="mb-3">
                         <label for="tijdslot" class="form-label">Tijdslot *</label>
                         <select name="tijdslot" id="tijdslot"
@@ -55,30 +102,36 @@
                             <option value="14:00:00" {{ old('tijdslot') == '14:00:00' ? 'selected' : '' }}>14:00
                             </option>
                         </select>
+                        {{-- Toon tijdslot validatie fouten (inclusief duplicate check) --}}
                         @error('tijdslot')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
 
+                    {{-- Tarief invoerveld met decimalen --}}
                     <div class="mb-3">
                         <label for="tarief" class="form-label">Tarief (€) *</label>
                         <input type="number" name="tarief" id="tarief"
                             class="form-control @error('tarief') is-invalid @enderror" value="{{ old('tarief') }}"
                             step="0.01" min="0.01" max="999.99"
                             required>
+                        {{-- Toon tarief validatie fouten --}}
                         @error('tarief')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
 
+                    {{-- Optioneel opmerking tekstveld --}}
                     <div class="mb-3">
                         <label for="opmerking" class="form-label">Opmerking</label>
                         <textarea name="opmerking" id="opmerking" class="form-control @error('opmerking') is-invalid @enderror" rows="3">{{ old('opmerking') }}</textarea>
+                        {{-- Toon opmerking validatie fouten --}}
                         @error('opmerking')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
 
+                    {{-- Actie knoppen: Opslaan en Annuleren --}}
                     <div class="d-flex justify-content-between">
                         <button type="submit" class="btn btn-primary">
                             <i class="bi bi-save me-1"></i> Opslaan
@@ -90,7 +143,7 @@
         </div>
     </div>
 
-    <!-- Success Modal -->
+    {{-- Success Modal - Getoond na succesvol opslaan via JavaScript --}}
     <div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
         data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
@@ -110,7 +163,7 @@
         </div>
     </div>
 
-    <!-- Error Modal (Duplicate) -->
+    {{-- Error Modal - Getoond bij validatiefouten via JavaScript --}}
     <div class="modal fade" id="errorModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
         data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
@@ -122,6 +175,7 @@
                     <i class="bi bi-x-circle text-danger" style="font-size: 4rem;"></i>
                     <h4 class="mt-3">Er is een fout opgetreden</h4>
                     <div class="text-muted">
+                        {{-- Toon alle validatiefouten in lijst --}}
                         @if($errors->any())
                             <ul class="list-unstyled mb-0">
                                 @foreach($errors->all() as $error)
@@ -140,8 +194,9 @@
 
     @push('scripts')
     <script>
+        // JavaScript om error modal automatisch te tonen bij validatiefouten
         document.addEventListener('DOMContentLoaded', function() {
-            // Show error modal if there are validation errors
+            // Controleer of er validatiefouten zijn via Blade directive
             @if($errors->any())
                 const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
                 errorModal.show();
