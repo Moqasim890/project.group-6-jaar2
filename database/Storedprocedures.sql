@@ -1,4 +1,4 @@
-
+USE laravel;
 
 DELIMITER $$
 
@@ -43,6 +43,14 @@ CREATE PROCEDURE sp_DeleteVerkoper(
     IN p_id int
 )
 BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        SELECT 'Er is een fout opgetreden bij het verwijderen van de verkoper.' AS message, 0 AS affected;
+    END;
+
+    START TRANSACTION;
+
     -- verwijder het record in de tabel verkopers op id
     DELETE FROM verkopers
     WHERE Id = p_id;
@@ -50,6 +58,7 @@ BEGIN
     -- hoeveel rijen verwijdert zijn (0 of 1)
     SELECT ROW_COUNT() AS affected;
 
+    COMMIT;
 END $$
 
 
@@ -72,6 +81,14 @@ CREATE PROCEDURE sp_UpdateVerkoper(
     IN v_IsActief         BIT
 )
 BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        SELECT 'Er is een fout opgetreden bij het bijwerken van de verkoper.' AS message, 0 AS affected;
+    END;
+
+    START TRANSACTION;
+
     UPDATE verkopers
         SET
             Naam = v_Naam,
@@ -82,6 +99,8 @@ BEGIN
             LogoUrl = v_LogoUrl,
             IsActief = v_IsActief
     WHERE id = v_id;
+
+    COMMIT;
 END $$
     
 
@@ -112,6 +131,14 @@ CREATE PROCEDURE sp_CreateVerkoper(
     IN v_opmerking TEXT
 )
 BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        SELECT 'Er is een fout opgetreden bij het aanmaken van de verkoper.' AS message, 0 AS affected;
+    END;
+
+    START TRANSACTION;
+
     -- insert in verkopers
     INSERT INTO verkopers (
         Naam,
@@ -134,6 +161,8 @@ BEGIN
         v_is_actief,
         v_opmerking
     );
+
+    COMMIT;
 END$$
 
 -- maakt een nieuwe stored procedure
@@ -156,9 +185,19 @@ END$$
 
 CREATE PROCEDURE SP_KopenTicket(IN bezoekerid INT, IN evenementid INT, IN prijsid INT, IN aantalTickets INT, IN datum date)
 BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        SELECT 'Er is een fout opgetreden bij het kopen van tickets.' AS message, 0 AS Affected;
+    END;
+
+    START TRANSACTION;
+
     INSERT INTO tickets(BezoekerId, EvenementId, PrijsId, AantalTickets, Datum)
     VALUES(bezoekerid, evenementid, prijsid, aantalTickets, datum);
     SELECT ROW_COUNT() AS Affected;
+
+    COMMIT;
 END $$
 
 CREATE PROCEDURE SP_Ticketophalen(IN bezoekerid INT, IN datum date)
@@ -186,6 +225,14 @@ CREATE PROCEDURE SP_CreatePrijs(
 BEGIN
     DECLARE v_duplicate_count INT;
 
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        SELECT 'Er is een fout opgetreden bij het aanmaken van de prijs.' AS message, 0 AS id;
+    END;
+
+    START TRANSACTION;
+
     -- Check if duplicate exists (same event, date, and timeslot)
     SELECT COUNT(*) INTO v_duplicate_count
     FROM prijzen
@@ -211,6 +258,8 @@ BEGIN
     VALUES (p_evenementId, p_datum, p_tijdslot, p_tarief, 1, p_opmerking);
 
     SELECT LAST_INSERT_ID() AS id;
+
+    COMMIT;
 END $$
 
 CREATE PROCEDURE SP_UpdatePrijs(
@@ -222,19 +271,39 @@ CREATE PROCEDURE SP_UpdatePrijs(
     IN p_isActief TINYINT,
     IN p_opmerking TEXT
 )
-BEGIN
+SP_UpdatePrijs: BEGIN
     DECLARE v_duplicate_count INT;
 
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        SELECT 'Er is een fout opgetreden bij het bijwerken van de prijs.' AS message, 0 AS Affected;
+    END;
+
+    START TRANSACTION;
+
+    -- Check if evenement exists and is active
     IF NOT EXISTS (
         SELECT 1
         FROM evenements
         WHERE id = p_evenementId
         AND IsActief = 1
     ) THEN
+        ROLLBACK;
         SELECT 'Dit ticket kan niet worden gewijzigd omdat het evenement niet actief is.' AS message
         ,0 AS Affected;
+        LEAVE SP_UpdatePrijs;
     END IF;
 
+    -- Check for tarief range
+    IF p_tarief < 0.01 OR p_tarief > 999.99 THEN
+        ROLLBACK;
+        SELECT 'Het tarief moet tussen 0.01 en 999.99 euro liggen.' AS message
+        ,0 AS Affected;
+        LEAVE SP_UpdatePrijs;
+    END IF;
+
+    -- Check for duplicate
     SELECT COUNT(*) INTO v_duplicate_count
     FROM prijzen
     WHERE EvenementId = p_evenementId
@@ -244,15 +313,11 @@ BEGIN
       AND id != p_id;
 
     IF v_duplicate_count > 0 THEN
+        ROLLBACK;
         SELECT 'Er bestaat al een actieve prijs voor dit evenement op deze datum en tijdslot.' AS message
         ,0 AS Affected;
+        LEAVE SP_UpdatePrijs;
     END IF;
-
-    IF p_tarief < 0.01 OR p_tarief > 999.99 THEN
-    SELECT 'Het tarief moet tussen 0.01 en 999.99 euro liggen.' AS message,
-    0 AS Affected;
-    END IF;
-
 
     -- Update via JOIN, zodat alleen gekoppeld wordt aan actief event
     UPDATE prijzen p
@@ -271,18 +336,40 @@ BEGIN
 
     -- Aantal gewijzigde rijen teruggeven
     SELECT ROW_COUNT() AS Affected;
+
+    COMMIT;
 END $$
 
 CREATE PROCEDURE SP_DeletePrijs(IN p_id INT)
 BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        SELECT 'Er is een fout opgetreden bij het verwijderen van de prijs.' AS message, 0 AS Affected;
+    END;
+
+    START TRANSACTION;
+
     -- Soft delete: set IsActief to 0 instead of hard delete
     -- This prevents foreign key constraint errors when tickets reference this prijs
-    UPDATE prijzen
-    SET IsActief = 0,
-        DatumGewijzigd = NOW()
-    WHERE id = p_id;
+    IF NOT EXISTS (
+        SELECT 1
+        FROM prijzen
+        WHERE id = p_id
+        AND IsActief = 1
+    ) THEN
+        ROLLBACK;
+        SELECT 'Het ticket kon niet worden verwijderd, omdat het niet meer bestaat.' AS message
+        ,0 AS Affected;
+    ELSE
+        UPDATE prijzen
+        SET IsActief = 0,
+            DatumGewijzigd = NOW()
+        WHERE id = p_id;
 
-    SELECT ROW_COUNT() AS Affected;
+        SELECT ROW_COUNT() AS Affected;
+        COMMIT;
+    END IF;
 END $$
 
 CREATE PROCEDURE SP_GetAllPrijzen()
@@ -330,6 +417,14 @@ CREATE PROCEDURE SP_CreateOrGetBezoeker(
 BEGIN
     DECLARE v_bezoeker_id INT;
 
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        SELECT 'Er is een fout opgetreden bij het ophalen/aanmaken van de bezoeker.' AS message, 0 AS id;
+    END;
+
+    START TRANSACTION;
+
     -- Check if bezoeker exists (using COLLATE to fix collation mismatch)
     SELECT id INTO v_bezoeker_id
     FROM bezoekers
@@ -345,6 +440,8 @@ BEGIN
     END IF;
 
     SELECT v_bezoeker_id AS id, p_email AS EmailAdres;
+
+    COMMIT;
 END $$
 
 
@@ -452,10 +549,20 @@ CREATE PROCEDURE SP_CreateTicket (
     IN datum DATE
 )
 BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        SELECT 'Er is een fout opgetreden bij het aanmaken van het ticket.' AS message, 0 AS Affected;
+    END;
+
+    START TRANSACTION;
+
     INSERT INTO prijzen (EvenementId, Tarief, Tijdslot, Datum)
     VALUES (eventId, prijs, tijdslot, datum);
 
     SELECT ROW_COUNT() AS Affected;
+
+    COMMIT;
 END $$
 
 CREATE PROCEDURE SP_UpdateTicket (
@@ -466,6 +573,14 @@ CREATE PROCEDURE SP_UpdateTicket (
     IN eventId INT
 )
 BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        SELECT 'Er is een fout opgetreden bij het bijwerken van het ticket.' AS message, 0 AS Affected;
+    END;
+
+    START TRANSACTION;
+
     UPDATE prijzen p
     JOIN evenement e ON e.Id = eventId
     SET p.Tarief = prijs,
@@ -476,12 +591,24 @@ BEGIN
       AND e.IsActief = 1;
 
     SELECT ROW_COUNT() AS Affected;
+
+    COMMIT;
 END $$
 
 CREATE PROCEDURE SP_DeleteTicket (IN id INT)
 BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        SELECT 'Er is een fout opgetreden bij het verwijderen van het ticket.' AS message, 0 AS Affected;
+    END;
+
+    START TRANSACTION;
+
     DELETE FROM prijzen WHERE id = id;
     SELECT ROW_COUNT() AS Affected;
+
+    COMMIT;
 END $$
 
 DELIMITER ;

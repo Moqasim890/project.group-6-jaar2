@@ -130,14 +130,14 @@ class AdminController extends Controller
     // Delete prijs
     public function destroy($id)
     {
-        $affected = PrijsModel::deletePrijs($id);
+        $res = PrijsModel::deletePrijs($id);
 
-        if ($affected > 0) {
+        if ($res->Affected > 0) {
             return redirect()->route('admin.prijzen.index')
                 ->with('success', 'Ticket prijs succesvol verwijderd!');
         }
 
         return redirect()->route('admin.prijzen.index')
-            ->with('error', 'Ticket prijs kon niet worden verwijderd!');
+            ->with('error', $res->message ?? 'Er is een fout opgetreden bij het verwijderen van de ticket prijs.');
     }
 }

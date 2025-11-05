@@ -175,17 +175,16 @@ class PrijsModel extends Model
      * Updates ook DatumGewijzigd.
      *
      * @param int $id De prijs ID om te verwijderen
-     * @return int Aantal affected rows (0 of 1)
+     * @return object Aantal affected rows (0 of 1)
      * @throws \Exception Bij database fouten
      */
     public static function deletePrijs($id)
     {
         try {
             Log::info('Calling SP_DeletePrijs', ['id' => $id]);
-            $results = DB::select('CALL SP_DeletePrijs(?)', [$id]);
-            $affected = !empty($results) ? $results[0]->Affected : 0;
-            Log::info('SP_DeletePrijs completed', ['id' => $id, 'affected' => $affected]);
-            return $affected;
+            $result = DB::selectOne('CALL SP_DeletePrijs(?)', [$id]);
+            Log::info('SP_DeletePrijs completed', ['id' => $id, 'affected' => $result]);
+            return $result;
         } catch (\Exception $e) {
             Log::error('Error in SP_DeletePrijs: ' . $e->getMessage(), [
                 'id' => $id,
