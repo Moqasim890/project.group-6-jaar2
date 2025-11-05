@@ -8,7 +8,7 @@
                 <p class="page-tekst">meer info over verkopers is hier te vinden</p>
                 <a href="/verkoper/create" class="btn btn-success w-25 border-black mb-2">Verkoper Toevoegen +</a>
                 {{-- meldingen kunnen beter --}}
-                @if (session('success'))
+                <!-- @if (session('success'))
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
                         {{ session('success') }}
                         <button type="button" class="btn-close" aria-label="sluiten" data-bs-dismiss="alert"></button>
@@ -22,7 +22,7 @@
                         <button type="button" class="btn-close" aria-label="sluiten" data-bs-dismiss="alert"></button>
                     </div>
                     <meta http-equiv="refresh" content="3;url={{ route('verkoper.index') }}">
-                @endif
+                @endif -->
                 <table class="table">
                     <thead>
                         <th scope="col">Naam</th>
