@@ -13,7 +13,7 @@
     {{-- Bootstrap Icons --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     {{-- Your app CSS/JS (Tailwind/custom) --}}
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite(['resources/css/app.css', 'resources/css/verkopers-style.css', 'resources/js/app.js'])
 </head>
 
 <body class="min-vh-100 d-flex flex-column">

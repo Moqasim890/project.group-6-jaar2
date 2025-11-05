@@ -1,6 +1,5 @@
 
     <x-layout>
-    @vite(['resources/css/verkopers-style.css'])
     <div class="container">
         <div class="row mt-5">
             <div class="col-12">

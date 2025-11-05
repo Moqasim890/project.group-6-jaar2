@@ -32,12 +32,14 @@ class PrijsModel extends Model
     public static function getAllPrijzen()
     {
         try {
-            Log::info('Calling SP_GetAllPrijzen');
-            $result = DB::select('CALL SP_GetAllPrijzen()');
-            Log::info('SP_GetAllPrijzen completed', ['count' => count($result)]);
+            Log::info('Getting all prijzen');
+            $result = DB::table('prijzen')
+                       ->select('*')
+                       ->get();
+            Log::info('Prijzen retrieved successfully', ['count' => count($result)]);
             return $result;
         } catch (\Exception $e) {
-            Log::error('Error in SP_GetAllPrijzen: ' . $e->getMessage(), [
+            Log::error('Error retrieving prijzen: ' . $e->getMessage(), [
                 'exception' => $e
             ]);
             throw $e;

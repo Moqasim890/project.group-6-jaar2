@@ -22,6 +22,13 @@ class EvenementModel extends Model
         'Opmerking'
     ];
 
+    protected $casts = [
+        'Datum' => 'date',
+        'AantalTicketsPerTijdslot' => 'integer',
+        'BeschikbareStands' => 'integer',
+        'IsActief' => 'boolean',
+    ];
+
     const CREATED_AT = 'DatumAangemaakt';
     const UPDATED_AT = 'DatumGewijzigd';
 

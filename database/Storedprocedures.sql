@@ -26,6 +26,10 @@ DROP PROCEDURE IF EXISTS sp_CreateVerkoper $$
 DROP PROCEDURE IF EXISTS sp_DeleteVerkoper $$
 DROP PROCEDURE IF EXISTS sp_UpdateVerkoper $$
 DROP PROCEDURE IF EXISTS sp_getVerkoperById $$
+DROP PROCEDURE IF EXISTS SP_CreateEvent $$
+DROP PROCEDURE IF EXISTS SP_UpdateEvent $$
+DROP PROCEDURE IF EXISTS SP_DeleteEvent $$
+
 
 CREATE PROCEDURE sp_GetAllVerkopersNaam (
     IN v_id INT,
@@ -610,5 +614,167 @@ BEGIN
 
     COMMIT;
 END $$
+
+
+/* CREATE */
+CREATE PROCEDURE SP_CreateEvent(
+    IN p_Naam  VARCHAR(255),
+    IN p_Datum DATE,
+    IN p_Locatie VARCHAR(255),
+    IN p_AantalTicketsPerTijdslot INT,
+    IN p_BeschikbareStands INT,
+    IN p_IsActief TINYINT(1),
+    IN p_Opmerking VARCHAR(255)
+)
+BEGIN
+    DECLARE v_dupes INT;
+
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        SIGNAL SQLSTATE '45000'
+          SET MESSAGE_TEXT = 'Onbekende fout bij aanmaken evenement.';
+    END;
+
+    START TRANSACTION;
+
+    /* Uniek: zelfde datum + locatie niet toegestaan */
+    SELECT COUNT(*) INTO v_dupes
+    FROM evenements
+    WHERE Datum = p_Datum AND Locatie = p_Locatie;
+
+    IF v_dupes > 0 THEN
+        ROLLBACK;
+        SIGNAL SQLSTATE '45000'
+          SET MESSAGE_TEXT = 'Er bestaat al een evenement op deze datum en locatie.';
+    END IF;
+
+    /* Range checks (optioneel, spiegel je formulier/validator) */
+    IF p_AantalTicketsPerTijdslot < 0 OR p_AantalTicketsPerTijdslot > 500000
+       OR p_BeschikbareStands < 0 OR p_BeschikbareStands > 500000 THEN
+        ROLLBACK;
+        SIGNAL SQLSTATE '45000'
+          SET MESSAGE_TEXT = 'AantalTicketsPerTijdslot/BeschikbareStands buiten bereik.';
+    END IF;
+
+    INSERT INTO evenements
+        (Naam, Datum, Locatie, AantalTicketsPerTijdslot, BeschikbareStands, IsActief, Opmerking, DatumAangemaakt, DatumGewijzigd)
+    VALUES
+        (p_Naam, p_Datum, p_Locatie, p_AantalTicketsPerTijdslot, p_BeschikbareStands, p_IsActief, p_Opmerking, NOW(), NOW());
+
+    /* Return the new ID */
+    SELECT LAST_INSERT_ID() AS id;
+
+    COMMIT;
+END $$
+
+/* UPDATE */
+CREATE PROCEDURE SP_UpdateEvent(
+    IN p_Id INT,
+    IN p_Naam  VARCHAR(255),
+    IN p_Datum DATE,
+    IN p_Locatie VARCHAR(255),
+    IN p_AantalTicketsPerTijdslot INT,
+    IN p_BeschikbareStands INT,
+    IN p_IsActief TINYINT(1),
+    IN p_Opmerking VARCHAR(255)
+)
+BEGIN
+    DECLARE v_dupes INT;
+
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        SIGNAL SQLSTATE '45000'
+          SET MESSAGE_TEXT = 'Onbekende fout bij bijwerken evenement.';
+    END;
+
+    START TRANSACTION;
+
+    /* Uniek: zelfde datum+locatie maar niet jezelf */
+    SELECT COUNT(*) INTO v_dupes
+    FROM evenements
+    WHERE Datum = p_Datum AND Locatie = p_Locatie AND Id <> p_Id;
+
+    IF v_dupes > 0 THEN
+        ROLLBACK;
+        SIGNAL SQLSTATE '45000'
+          SET MESSAGE_TEXT = 'Er bestaat al een evenement op deze datum en locatie.';
+    END IF;
+
+    IF p_AantalTicketsPerTijdslot < 0 OR p_AantalTicketsPerTijdslot > 500000
+       OR p_BeschikbareStands < 0 OR p_BeschikbareStands > 500000 THEN
+        ROLLBACK;
+        SIGNAL SQLSTATE '45000'
+          SET MESSAGE_TEXT = 'AantalTicketsPerTijdslot/BeschikbareStands buiten bereik.';
+    END IF;
+
+    UPDATE evenements
+       SET Naam = p_Naam,
+           Datum = p_Datum,
+           Locatie = p_Locatie,
+           AantalTicketsPerTijdslot = p_AantalTicketsPerTijdslot,
+           BeschikbareStands = p_BeschikbareStands,
+           IsActief = p_IsActief,
+           Opmerking = p_Opmerking,
+           DatumGewijzigd = NOW()
+     WHERE Id = p_Id;
+
+    SELECT ROW_COUNT() AS Affected;
+
+    COMMIT;
+END $$
+
+/* DELETE (geblokkeerd als actief; optioneel ook blokkeren met bestaande prijzen) */
+CREATE PROCEDURE SP_DeleteEvent(IN p_Id INT)
+BEGIN
+    DECLARE v_is_actief TINYINT(1);
+    DECLARE v_has_prices INT DEFAULT 0;
+
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        SIGNAL SQLSTATE '45000'
+          SET MESSAGE_TEXT = 'Onbekende fout bij verwijderen evenement.';
+    END;
+
+    START TRANSACTION;
+
+    /* Niet verwijderen als actief */
+    SELECT IsActief INTO v_is_actief
+    FROM evenements
+    WHERE Id = p_Id
+    FOR UPDATE;
+
+    IF v_is_actief IS NULL THEN
+        ROLLBACK;
+        SIGNAL SQLSTATE '45000'
+          SET MESSAGE_TEXT = 'Evenement bestaat niet.';
+    END IF;
+
+    IF v_is_actief = 1 THEN
+        ROLLBACK;
+        SIGNAL SQLSTATE '45000'
+          SET MESSAGE_TEXT = 'Actieve evenementen kunnen niet worden verwijderd.';
+    END IF;
+
+    /* Optioneel: blokkeer verwijderen als er prijzen bestaan */
+    SELECT COUNT(*) INTO v_has_prices
+    FROM prijzen
+    WHERE EvenementId = p_Id AND IsActief = 1;
+
+    IF v_has_prices > 0 THEN
+        ROLLBACK;
+        SIGNAL SQLSTATE '45000'
+          SET MESSAGE_TEXT = 'Er bestaan nog actieve prijzen voor dit evenement.';
+    END IF;
+
+    DELETE FROM evenements WHERE Id = p_Id;
+
+    SELECT ROW_COUNT() AS Affected;
+
+    COMMIT;
+END $$
+
 
 DELIMITER ;
