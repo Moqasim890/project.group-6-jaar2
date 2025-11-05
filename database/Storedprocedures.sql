@@ -1,5 +1,4 @@
 
-USE laravel;
 
 DELIMITER $$
 
@@ -22,7 +21,69 @@ DROP PROCEDURE IF EXISTS SP_GetPrijsByID $$
 DROP PROCEDURE IF EXISTS SP_CreateOrGetBezoeker $$
 DROP PROCEDURE IF EXISTS sp_GetAllVerkopers $$
 DROP PROCEDURE IF EXISTS sp_GetVerkoperByNaam $$
+DROP PROCEDURE IF EXISTS sp_GetAllVerkopersNaam $$
 DROP PROCEDURE IF EXISTS sp_CreateVerkoper $$
+DROP PROCEDURE IF EXISTS sp_DeleteVerkoper $$
+DROP PROCEDURE IF EXISTS sp_UpdateVerkoper $$
+DROP PROCEDURE IF EXISTS sp_getVerkoperById $$
+
+CREATE PROCEDURE sp_GetAllVerkopersNaam (
+    IN v_id INT,
+    IN v_Naam VARCHAR(100)
+)
+BEGIN
+    SELECT COUNT(*) AS Aantal
+    FROM verkopers
+    WHERE Naam COLLATE utf8mb4_unicode_ci = v_Naam COLLATE utf8mb4_unicode_ci
+    AND Id != v_Id; -- sluit zichzelf uit
+END $$
+
+CREATE PROCEDURE sp_DeleteVerkoper(
+    -- input parameters
+    IN p_id int
+)
+BEGIN
+    -- verwijder het record in de tabel verkopers op id
+    DELETE FROM verkopers
+    WHERE Id = p_id;
+
+    -- hoeveel rijen verwijdert zijn (0 of 1)
+    SELECT ROW_COUNT() AS affected;
+
+END $$
+
+
+CREATE PROCEDURE sp_getVerkoperById(
+    IN v_id INT
+)
+BEGIN
+    SELECT * FROM verkopers WHERE id = v_id;
+END $$
+
+CREATE PROCEDURE sp_UpdateVerkoper(
+    -- input parameters
+    IN v_id               INT,
+    IN v_Naam             VARCHAR(100),
+    IN v_SpecialeStatus   VARCHAR(10),
+    IN v_VerkooptSoort    VARCHAR(100),
+    IN v_StandType        VARCHAR(10),
+    IN v_Dagen            VARCHAR(20),
+    IN v_LogoUrl          VARCHAR(500),
+    IN v_IsActief         BIT
+)
+BEGIN
+    UPDATE verkopers
+        SET
+            Naam = v_Naam,
+            SpecialeStatus = v_SpecialeStatus,
+            VerkooptSoort = v_VerkooptSoort,
+            StandType = v_StandType,
+            Dagen = v_Dagen,
+            LogoUrl = v_LogoUrl,
+            IsActief = v_IsActief
+    WHERE id = v_id;
+END $$
+    
 
 CREATE PROCEDURE sp_GetAllVerkopers()
 BEGIN
@@ -33,7 +94,8 @@ BEGIN
         v.VerkooptSoort,
         v.StandType,
         v.Dagen,
-        v.LogoUrl
+        v.LogoUrl,
+        v.IsActief
     FROM verkopers AS v;
 END $$
 
@@ -423,6 +485,3 @@ BEGIN
 END $$
 
 DELIMITER ;
-
-
-

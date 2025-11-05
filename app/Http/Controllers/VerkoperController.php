@@ -25,6 +25,7 @@ class VerkoperController extends Controller
     {
         $verkopers = $this->VerkoperModel->sp_GetAllVerkopers();
 
+        // dd($verkopers);
         return view('verkoper.index', [
             'verkopers' => $verkopers
         ]);
@@ -71,7 +72,7 @@ class VerkoperController extends Controller
                             // met inputs zodat niet alles opnieuw ingevuld hoeft te worden
                              ->withInput()
                             // met errors met als Key Naam en Value ...
-                             ->withErrors(['Naam' => 'Deze naam bestaat al.']);
+                             ->withErrors(['Naam' => 'Deze naam bestaat am l.']);
         }
 
         // roep stored procedure aan in model en geef data mee
@@ -91,6 +92,7 @@ class VerkoperController extends Controller
                         // met melding met als Key success en Value ...
                          ->with('success', "Verkoper is succesvol toegevoegd:" . $data['Naam']);
     }
+
     /**
      * Toon één verkoper.
      */
@@ -99,19 +101,37 @@ class VerkoperController extends Controller
         return view('verkoper.show', compact('verkoper'));
     }
 
-    /**
-     * Formulier bewerken van een verkoper.
-     */
-    public function edit(VerkoperModel $verkoper): View
+    /*
+        naar pagina sturen en checken of de id bestaat
+    */
+    public function edit($id)
     {
-        return view('verkoper.edit', compact('verkoper'));
+        // voert stored procedure uit en slaat gegevens op in $verkoper
+        $verkoper = $this->VerkoperModel->sp_getVerkoperById($id);
+
+        // controleer of er iets is opgehaald
+        if (!$verkoper) {
+            // als er niks is opgehaald redirect terug met fout melding
+            return redirect()->back()->with('error', 'Deze verkoper bestaat niet.');
+        }
+
+        // dd($verkoper);
+
+        // de view
+        return view(
+        'verkoper.edit', [
+            'title' => 'verkoper wijzigen'
+        ], compact('verkoper'));
     }
 
-    /**
-     * Update een verkoper.
-     */
-    public function update(Request $request, VerkoperModel $verkoper): RedirectResponse
+    /*
+    *   probleem:
+    *   check of naam in array zit wat zo is
+    *   als je iets anders dan naam weizigd dan krijg je error
+    */
+    public function update(Request $request, $id)
     {
+        // haalt data op uit request en valideert het en zet het in $data
         $data = $request->validate([
             'Naam'          => 'required|string|max:200',
             'SpecialeStatus'=> 'required|string',
@@ -120,21 +140,55 @@ class VerkoperController extends Controller
             'Dagen'         => 'required|string',
             'LogoUrl'       => 'nullable|string|max:500',
             'IsActief'      => 'nullable|boolean',
-            'Opmerking'     => 'nullable|string',
         ]);
 
-        $verkoper->update($data);
+        // Checkbox fix
+        $data['IsActief'] = $request->has('IsActief');
 
+        $existingNaam = $this->VerkoperModel->sp_GetAllVerkopersNaam($data['Naam'], $id);
+
+        // dd($existingNaam);
+        if ($existingNaam[0]->Aantal > 0) {
+            return redirect()->back()->with('error', 'Deze naam wordt al gebruikt.');
+        }
+
+        // controlleert of Naam of logoUrl alleen nummers zijn want dat mag niet van mazin
+        if (is_numeric($data['Naam']) || is_numeric($data['LogoUrl'])) {
+            // stuurt terug naar edit met melding
+            return redirect()->back()->with('error', 'Mag niet alleen getallen zijn');
+        }
+
+        // voer stored procedure uit met gevalideerde data en id
+        $this->VerkoperModel->sp_UpdateVerkoper($id, $data);
+
+        // redirect naar index met success melding
         return redirect()->route('verkoper.index')->with('success', 'Verkoper bijgewerkt!');
     }
 
-    /**
-     * Verwijder een verkoper.
-     */
-    public function destroy(VerkoperModel $verkoper): RedirectResponse
-    {
-        $verkoper->delete();
+    /*
+        Verwijder verkoper op id
+    */
+    public function destroy($id)
+    {   
+        $verkoper = $this->VerkoperModel->sp_getVerkoperById($id);
 
-        return redirect()->route('verkoper.index')->with('success', 'Verkoper verwijderd!');
+        if ($verkoper->IsActief) {
+            return redirect()->back()
+                            ->with('error', 'Deze gebruiker is nog actief');
+        }
+
+        // voer stored procedure uit en sla het resultaat op in $result
+        $result = $this->VerkoperModel->sp_DeleteVerkoper($id);
+
+        // controleer of de verkoper succesvol is verwijderd
+        if ($result > 0) {
+            // redirect naar de index met een succes melding
+            return redirect()->route('verkoper.index')
+                             ->with('success', 'Verkoper is succesvol verwijdert.');
+        }
+
+        // als verwijderen is mislukt redirect terug met een fout melding
+        return redirect()->route('verkoper.index')
+                         ->with('error', 'Verkoper is niet gevonden of niet verwijderd.');
     }
 }
