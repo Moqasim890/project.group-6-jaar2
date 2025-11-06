@@ -365,13 +365,9 @@ BEGIN
         SELECT 'Het ticket kon niet worden verwijderd, omdat het niet meer bestaat.' AS message
         ,0 AS Affected;
     ELSE
-        UPDATE prijzen AS przn
-        JOIN
-        tickets as tick on tick.PrijsId = p_id
-        SET przn.IsActief = 0
-            ,przn.DatumGewijzigd = NOW()
-            ,tick.IsActief = 0
-            ,tick.DatumGewijzigd = NOW()
+        UPDATE prijzen
+        SET IsActief = 0,
+            DatumGewijzigd = NOW()
         WHERE id = p_id;
 
         SELECT ROW_COUNT() AS Affected;
