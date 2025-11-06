@@ -12,6 +12,10 @@ class EvenementModel extends Model
     protected $primaryKey = 'id';
     public $timestamps = true;
 
+    // Aangepaste timestamp-kolommen
+    const CREATED_AT = 'DatumAangemaakt';
+    const UPDATED_AT = 'DatumGewijzigd';
+
     protected $fillable = [
         'Naam',
         'Locatie',
@@ -22,22 +26,110 @@ class EvenementModel extends Model
         'Opmerking'
     ];
 
-    const CREATED_AT = 'DatumAangemaakt';
-    const UPDATED_AT = 'DatumGewijzigd';
+    // Handige casts (pas aan als je kolomtypes anders zijn)
+    protected $casts = [
+        'Datum' => 'datetime',
+        'DatumAangemaakt' => 'datetime',
+        'DatumGewijzigd' => 'datetime',
+        'IsActief' => 'boolean',
+        'AantalTicketsPerTijdslot' => 'integer',
+        'BeschikbareStands' => 'integer',
+    ];
 
-    // Relationship: Evenement has many stands
+    /*
+     |--------------------------------------------------------------------------
+     | Model events -> loggen naar backlog (laravel.log)
+     |--------------------------------------------------------------------------
+     |
+     | - creating/created: wanneer een event wordt aangemaakt
+     | - updating/updated: schrijft een nette diff (van -> naar) van gewijzigde velden
+     | - deleting/deleted: wanneer een event wordt verwijderd
+     |
+     | Hiermee zie je de updates meteen terug in de backlog.
+     |
+     */
+    protected static function booted()
+    {
+        // Voor het opslaan (optioneel, context)
+        static::creating(function ($event) {
+            Log::info('Evenement creating...', [
+                'attributes' => $event->getAttributes()
+            ]);
+        });
+
+        // Na het opslaan (nieuw record)
+        static::created(function ($event) {
+            Log::info('Evenement created', [
+                'id' => $event->id,
+                'attributes' => $event->fresh()?->getAttributes()
+            ]);
+        });
+
+        // Voor update (optioneel, context)
+        static::updating(function ($event) {
+            Log::info('Evenement updating...', [
+                'id' => $event->id,
+                'dirty' => $event->getDirty()
+            ]);
+        });
+
+        // Na update: schrijf een diff van gewijzigde velden
+        static::updated(function ($event) {
+            // Velden die veranderd zijn na save
+            $changed = $event->getChanges();
+
+            // Laat de timestamp desgewenst buiten de diff
+            unset($changed[static::UPDATED_AT]);
+
+            $diff = [];
+            foreach ($changed as $key => $newValue) {
+                $oldValue = $event->getOriginal($key);
+                $diff[$key] = [
+                    'from' => $oldValue,
+                    'to'   => $newValue,
+                ];
+            }
+
+            Log::info('Evenement updated', [
+                'id' => $event->id,
+                'changes' => $diff,
+            ]);
+        });
+
+        // Voor delete (optioneel, context)
+        static::deleting(function ($event) {
+            Log::info('Evenement deleting...', [
+                'id' => $event->id,
+                'attributes' => $event->getAttributes()
+            ]);
+        });
+
+        // Na delete
+        static::deleted(function ($event) {
+            Log::info('Evenement deleted', [
+                'id' => $event->id
+            ]);
+        });
+    }
+
+    // Relatie: Evenement heeft veel stands
     public function stands()
     {
         return $this->hasMany(StandModel::class, 'EvenementId', 'id');
     }
 
-    // Relationship: Evenement has many prijzen
+    // Relatie: Evenement heeft veel prijzen
     public function prijzen()
     {
         return $this->hasMany(PrijsModel::class, 'EvenementId', 'id');
     }
 
-    // Static method to get all events using stored procedure
+    /*
+     |--------------------------------------------------------------------------
+     | Stored procedures
+     |--------------------------------------------------------------------------
+     */
+    // Alle events via stored procedure
     public static function getAllEvents()
     {
         try {
@@ -53,14 +145,17 @@ class EvenementModel extends Model
         }
     }
 
-    // Static method to get event by ID using stored procedure
+    // Event op ID via stored procedure
     public static function getEventById($id)
     {
         try {
             Log::info('Calling SP_GetEventByID', ['id' => $id]);
             $results = DB::select('CALL SP_GetEventByID(?)', [$id]);
             $result = !empty($results) ? $results[0] : null;
-            Log::info('SP_GetEventByID completed', ['id' => $id, 'found' => !empty($result)]);
+            Log::info('SP_GetEventByID completed', [
+                'id' => $id,
+                'found' => !empty($result)
+            ]);
             return $result;
         } catch (\Exception $e) {
             Log::error('Error in SP_GetEventByID: ' . $e->getMessage(), [
