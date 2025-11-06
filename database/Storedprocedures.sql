@@ -273,7 +273,7 @@ CREATE PROCEDURE SP_UpdatePrijs(
     IN p_tarief DECIMAL(10,2),
     IN p_isActief TINYINT,
     IN p_opmerking TEXT
-)
+) 
 SP_UpdatePrijs: BEGIN
     DECLARE v_duplicate_count INT;
 
@@ -365,9 +365,13 @@ BEGIN
         SELECT 'Het ticket kon niet worden verwijderd, omdat het niet meer bestaat.' AS message
         ,0 AS Affected;
     ELSE
-        UPDATE prijzen
-        SET IsActief = 0,
-            DatumGewijzigd = NOW()
+        UPDATE prijzen AS przn
+        JOIN
+        tickets as tick on tick.PrijsId = p_id
+        SET przn.IsActief = 0
+            ,przn.DatumGewijzigd = NOW()
+            ,tick.IsActief = 0
+            ,tick.DatumGewijzigd = NOW()
         WHERE id = p_id;
 
         SELECT ROW_COUNT() AS Affected;
